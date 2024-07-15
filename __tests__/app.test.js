@@ -3,6 +3,8 @@ const app = require("../db/app.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
+const fs = require("fs").promises;
+const path = require("path");
 
 beforeAll(() => {
   return seed(data);
@@ -10,6 +12,23 @@ beforeAll(() => {
 
 afterAll(() => {
   return db.end();
+});
+
+describe("/api", () => {
+  describe("GET", () => {
+    test("GET 200: responds with a json representation of all available endpoints", () => {
+      const filePath = path.join(__dirname, "../endpoints.json");
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          return fs.readFile(filePath, "utf-8").then((fileContent) => {
+            const expectedEndpoints = JSON.parse(fileContent);
+            expect(response.body).toEqual(expectedEndpoints);
+          });
+        });
+    });
+  });
 });
 
 describe("/api/topics", () => {
