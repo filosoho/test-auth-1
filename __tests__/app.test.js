@@ -5,6 +5,7 @@ const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const fs = require("fs").promises;
 const path = require("path");
+const jestSorted = require("jest-sorted");
 
 beforeAll(() => {
   return seed(data);
@@ -59,44 +60,73 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("GET 200: responds with status 200 and an array of article objects without a body property sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+            expect(article).not.toHaveProperty("body");
+          });
+        });
+    });
+    test("GET 200: responds with articles sorted by created_at in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("GET 200: validates types of the article object properties without the body property", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                author: expect.any(String),
+                title: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+    test("GET 200: validates `created_at` field is a valid ISO 8601 date string", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          articles.forEach((article) => {
+            expect(Date.parse(article.created_at)).not.toBeNaN();
+            const date = new Date(article.created_at);
+            expect(date.toISOString()).toBe(article.created_at); // Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+          });
+        });
+    });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
-    test("GET 200: responds with status 200 and the article object", () => {
-      return request(app)
-        .get("/api/articles/1")
-        .expect(200)
-        .then(({ body: { article } }) => {
-          expect(article).toHaveProperty("author");
-          expect(article).toHaveProperty("title");
-          expect(article).toHaveProperty("article_id");
-          expect(article).toHaveProperty("body");
-          expect(article).toHaveProperty("topic");
-          expect(article).toHaveProperty("created_at");
-          expect(article).toHaveProperty("votes");
-          expect(article).toHaveProperty("article_img_url");
-        });
-    });
-    test("GET 200: validates types of the article object properties", () => {
-      let id = 1;
-      return request(app)
-        .get(`/api/articles/${id}`)
-        .expect(200)
-        .then(({ body: { article } }) => {
-          expect(typeof article.article_id).toBe("number");
-          expect(article).toEqual({
-            article_id: id,
-            author: expect.any(String),
-            title: expect.any(String),
-            body: expect.any(String),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-          });
-          expect(Date.parse(article.created_at)).not.toBeNaN();
-          expect(Date.parse(article.created_at)).toBe(1594325460000); // Unix timestamp from 2020-07-09T20:11:00.000Z is 1594325460000 - number of milliseconds since January 1, 1970, 00:00:00 UTC // Source https://www.timestamp-converter.com/
-        });
-    });
     test("GET 200: responds with the correct article object", () => {
       return request(app)
         .get("/api/articles/1")
