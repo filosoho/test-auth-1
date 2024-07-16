@@ -22,13 +22,6 @@ exports.fetchArticles = () => {
 exports.fetchArticleById = (article_id) => {
   const articleId = Number(article_id);
 
-  if (isNaN(articleId)) {
-    return Promise.reject({
-      status: 400,
-      msg: "400 - Bad Request: Invalid article_id",
-    });
-  }
-
   const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
   return db
     .query(queryStr, [articleId])
