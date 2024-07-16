@@ -1,7 +1,7 @@
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
-const { articleExists } = require("../utils/utils.validations.js");
+const { articleExists } = require("../models/utils.model.js");
 
 beforeAll(() => {
   return seed(data);
@@ -11,7 +11,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("Tests for utils.validations.js", () => {
+describe("Tests for utils.model.js", () => {
   test("should return true if the article exists", () => {
     return articleExists(1).then((exists) => {
       expect(exists).toBe(true);

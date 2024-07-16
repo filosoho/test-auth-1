@@ -1,13 +1,14 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("../controllers/topics.controller.js");
 const { getEndpoints } = require("../controllers/api.controller.js");
+const { getTopics } = require("../controllers/topics.controller.js");
 const {
   getArticles,
   getArticleById,
 } = require("../controllers/articles.controller.js");
 const {
   getCommentsByArticleId,
+  postCommentForArticle,
 } = require("../controllers/comments.controller.js");
 
 module.exports = app;
@@ -19,6 +20,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentForArticle);
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "404 - Not Found: Endpoint does not exist" });

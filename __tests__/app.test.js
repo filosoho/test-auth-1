@@ -184,6 +184,29 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("GET 200: each comment should have valid property types", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          comments.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+              })
+            );
+
+            expect(new Date(comment.created_at).toString()).not.toBe(
+              "Invalid Date"
+            );
+          });
+        });
+    });
     test("fetchCommentsByArticleId: ensures comments are sorted by created_at in descending order", () => {
       return request(app)
         .get(`/api/articles/1/comments`)
@@ -203,39 +226,6 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).toEqual([]);
         });
     });
-    test("GET 200: responds with comments for a valid article_id, including comments with future dates", () => {
-      return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body: { comments } }) => {
-          expect(comments).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                body: "I hate streaming eyes even more",
-              }),
-              expect.objectContaining({ body: "Superficially charming" }),
-            ])
-          );
-        });
-    });
-    test("GET 200: responds with comments for a valid article_id, including comments with past dates", () => {
-      return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body: { comments } }) => {
-          expect(comments).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-              }),
-              expect.objectContaining({
-                body: "I hate streaming noses",
-              }),
-            ])
-          );
-        });
-    });
-
     test("GET 404: responds with status 404 and Article not found message for an invalid article_id", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
@@ -250,6 +240,130 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("400 - Bad Request: Invalid article_id");
+        });
+    });
+  });
+
+  describe("POST", () => {
+    test("POST 201: successfully adds a comment for a valid article_id", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "butter_bridge",
+          body: "This is a new comment!",
+        })
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            author: "butter_bridge",
+            body: "This is a new comment!",
+            article_id: 1,
+          });
+
+          expect(new Date(comment.created_at).toString()).not.toBe(
+            "Invalid Date"
+          );
+        });
+    });
+
+    test("POST 400: responds with an error if username is missing", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ body: "This is a new comment!" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(
+            "400 - Bad Request: Missing username or body in request body"
+          );
+        });
+    });
+
+    test("POST 400: responds with an error if body is missing", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "butter_bridge" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(
+            "400 - Bad Request: Missing username or body in request body"
+          );
+        });
+    });
+
+    test("POST 400: responds with an error if body is an empty string", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "butter_bridge", body: "" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: Comment body cannot be empty");
+        });
+    });
+    test("POST 404: responds with an error for non-existent article_id", () => {
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send({
+          username: "butter_bridge",
+          body: "This is a new comment!",
+        })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("404 - Not Found: Article not found");
+        });
+    });
+
+    test("POST 404: responds with an error for non-existent username", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "non_existent_user",
+          body: "This is a new comment!",
+        })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("404 - Not Found: User does not exist");
+        });
+    });
+
+    test("POST 400: responds with an error for non-numeric article_id", () => {
+      return request(app)
+        .post("/api/articles/invalid_id/comments")
+        .send({
+          username: "butter_bridge",
+          body: "This is a new comment!",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: Invalid article_id");
+        });
+    });
+
+    test("POST 400: responds with an error for invalid username data type", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: 12345,
+          body: "This is a new comment!",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: username must be a string");
+        });
+    });
+
+    test("POST 400: responds with an error for invalid body data type", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "butter_bridge",
+          body: 12345,
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: body must be a string");
         });
     });
   });
