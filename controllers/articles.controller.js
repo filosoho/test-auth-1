@@ -1,6 +1,7 @@
 const {
   fetchArticles,
   fetchArticleById,
+  fetchCommentsByArticleId,
 } = require("../models/articles.model.js");
 
 exports.getArticles = (req, res, next) => {
