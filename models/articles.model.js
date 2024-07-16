@@ -23,19 +23,14 @@ exports.fetchArticleById = (article_id) => {
   const articleId = Number(article_id);
 
   const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
-  return db
-    .query(queryStr, [articleId])
-    .then(({ rows }) => {
-      const article = rows[0];
-      if (!article) {
-        return Promise.reject({
-          status: 404,
-          msg: "404 - Not Found: Article not found",
-        });
-      }
-      return article;
-    })
-    .catch((err) => {
-      return Promise.reject(err);
-    });
+  return db.query(queryStr, [articleId]).then(({ rows }) => {
+    const article = rows[0];
+    if (!article) {
+      return Promise.reject({
+        status: 404,
+        msg: "404 - Not Found: Article not found",
+      });
+    }
+    return article;
+  });
 };
