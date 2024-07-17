@@ -157,6 +157,18 @@ describe("/api/articles", () => {
         });
     });
 
+    test("GET 200: responds with articles filtered by topic", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBeGreaterThan(0);
+          body.articles.forEach((article) => {
+            expect(article.topic).toBe("cats");
+          });
+        });
+    });
+
     test("GET 400: ?sort_by=&order= returns 400 error for invalid sort_by or order query parameters", () => {
       return request(app)
         .get("/api/articles?sort_by=&order=")
@@ -187,6 +199,24 @@ describe("/api/articles", () => {
           expect(body.msg).toBe(
             "400 - Bad Request: Invalid sort_by or order query parameter"
           );
+        });
+    });
+
+    test("GET 404: responds with 404 for non-existent topic", () => {
+      return request(app)
+        .get("/api/articles?topic=non_existent_topic")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: topic  not found");
+        });
+    });
+
+    test("GET 404: responds with 400 if topic value missing", () => {
+      return request(app)
+        .get("/api/articles?topic=")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Topic value missing");
         });
     });
   });

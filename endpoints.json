@@ -26,6 +26,14 @@
       {
         "query": "?sort_by=votes&order=desc",
         "description": "Sort articles by votes in descending order"
+      },
+      {
+        "query": "?topic='cooking'",
+        "description": "Filter articles by the topic 'cats'"
+      },
+      {
+        "query": "?topic=cooking&sort_by=votes&order=asc",
+        "description": "Filter articles by the topic 'cats' and sort by votes in ascending order"
       }
     ],
     "exampleResponse": {
