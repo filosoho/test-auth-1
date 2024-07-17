@@ -37,3 +37,15 @@ exports.commentExists = (comment_id) => {
     return rows.length > 0;
   });
 };
+
+exports.topicExists = (topic) => {
+  const queryStr = `
+    SELECT 1
+    FROM topics
+    WHERE slug = $1;
+  `;
+
+  return db.query(queryStr, [topic]).then(({ rows }) => {
+    return rows.length > 0;
+  });
+};

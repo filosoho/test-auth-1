@@ -1,8 +1,8 @@
 const db = require("../db/connection.js");
 const { validateIncVotes } = require("../utils/utils.validation.js");
-const { articleExists } = require("./utils.model.js");
+const { articleExists, topicExists } = require("./utils.model.js");
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortColumns = [
     "article_id",
     "title",
@@ -22,6 +22,13 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     });
   }
 
+  if (topic === "") {
+    return Promise.reject({
+      status: 400,
+      msg: "400 - Bad Request: Topic value missing",
+    });
+  }
+
   let queryStr = `
   SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
   COUNT(comments.comment_id) AS comment_count
@@ -29,16 +36,30 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
   LEFT JOIN comments ON comments.article_id = articles.article_id
 `;
 
+  const queryParams = [];
+
+  if (topic) {
+    queryStr += ` WHERE articles.topic = $${queryParams.length + 1}`;
+    queryParams.push(topic);
+  }
+
   queryStr += `
   GROUP BY articles.article_id
   ORDER BY ${sort_by} ${order.toUpperCase()};
 `;
-
-  return db.query(queryStr).then(({ rows }) => {
-    return rows.map((row) => ({
-      ...row,
-      comment_count: Number(row.comment_count),
-    }));
+  return topicExists(topic).then(() => {
+    return db.query(queryStr, queryParams).then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "404 - Not Found: topic  not found",
+        });
+      }
+      return rows.map((row) => ({
+        ...row,
+        comment_count: Number(row.comment_count),
+      }));
+    });
   });
 };
 
