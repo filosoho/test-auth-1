@@ -122,6 +122,73 @@ describe("/api/articles", () => {
           });
         });
     });
+
+    test("GET 200: ?sort_by=created_at&order=asc returns articles sorted by created_at in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBeGreaterThan(0);
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: false,
+          });
+        });
+    });
+
+    test("GET 200: ?sort_by=votes&order=desc returns articles sorted by votes in descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=desc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBeGreaterThan(0);
+          expect(body.articles).toBeSortedBy("votes", { descending: true });
+        });
+    });
+
+    test("GET 200: ?sort_by=comment_count&order=asc returns articles sorted by comment_count in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBeGreaterThan(0);
+          expect(body.articles).toBeSortedBy("comment_count", {
+            descending: false,
+          });
+        });
+    });
+
+    test("GET 400: ?sort_by=&order= returns 400 error for invalid sort_by or order query parameters", () => {
+      return request(app)
+        .get("/api/articles?sort_by=&order=")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "400 - Bad Request: Invalid sort_by or order query parameter"
+          );
+        });
+    });
+
+    test("GET 400: ?sort_by=invalid_column returns 400 error for invalid sort_by column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid_column")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "400 - Bad Request: Invalid sort_by or order query parameter"
+          );
+        });
+    });
+
+    test("GET 400: ?order=invalid_order returns 400 error for invalid order value", () => {
+      return request(app)
+        .get("/api/articles?order=invalid_order")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "400 - Bad Request: Invalid sort_by or order query parameter"
+          );
+        });
+    });
   });
 });
 
