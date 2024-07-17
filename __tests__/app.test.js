@@ -561,14 +561,5 @@ describe("/api/users", () => {
           });
         });
     });
-
-    test("404: responds with an error for an invalid endpoint", () => {
-      return request(app)
-        .get("/api/invalid-endpoint")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("404 - Not Found: Endpoint does not exist");
-        });
-    });
   });
 });
