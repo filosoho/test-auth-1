@@ -151,7 +151,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/invalid_id")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Invalid article_id");
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
         });
     });
     test("GET 404: responds with status 404 for a non-existent article_id", () => {
@@ -239,7 +239,7 @@ describe("/api/articles/:article_id", () => {
         .send({ inc_votes: 1 })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("400 - Bad Request: Invalid article_id");
+          expect(msg).toBe("400 - Bad Request: invalid_id");
         });
     });
 
@@ -348,7 +348,7 @@ describe("/api/articles/:article_id/comments", () => {
         .get("/api/articles/invalid_id/comments")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Invalid article_id");
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
         });
     });
   });
@@ -442,7 +442,7 @@ describe("/api/articles/:article_id/comments", () => {
         })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("400 - Bad Request: Invalid article_id");
+          expect(msg).toBe("400 - Bad Request: invalid_id");
         });
     });
 
@@ -469,6 +469,76 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("400 - Bad Request: body must be a string");
+        });
+    });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    test("204: successfully deletes the comment and returns no content", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+          return db.query("SELECT * FROM comments WHERE comment_id = 1");
+        })
+        .then(({ rows }) => {
+          expect(rows.length).toBe(0);
+        });
+    });
+
+    test("404: responds with an error when trying to delete a non-existent comment", () => {
+      return request(app)
+        .delete("/api/comments/9999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Comment not found");
+        });
+    });
+
+    test("400: responds with an error when comment_id is invalid", () => {
+      return request(app)
+        .delete("/api/comments/invalid_id")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+
+    test("404: responds with an error when comment_id is missing", () => {
+      return request(app)
+        .delete("/api/comments/")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Endpoint does not exist");
+        });
+    });
+
+    test("400: responds with an error when comment_id is a negative number", () => {
+      return request(app)
+        .delete("/api/comments/-1")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+
+    test("400: responds with an error when comment_id is a decimal number", () => {
+      return request(app)
+        .delete("/api/comments/1.5")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+
+    test("400: responds with an error when comment_id is zero", () => {
+      return request(app)
+        .delete("/api/comments/0")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
         });
     });
   });

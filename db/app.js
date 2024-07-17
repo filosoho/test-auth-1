@@ -10,6 +10,7 @@ const {
 const {
   getCommentsByArticleId,
   postCommentForArticle,
+  removeCommentById,
 } = require("../controllers/comments.controller.js");
 
 module.exports = app;
@@ -26,6 +27,8 @@ app.post("/api/articles/:article_id/comments", postCommentForArticle);
 
 app.patch("/api/articles/:article_id", patchArticleById);
 
+app.delete("/api/comments/:comment_id", removeCommentById);
+
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "404 - Not Found: Endpoint does not exist" });
 });
@@ -33,7 +36,7 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({
-      msg: "400 - Bad Request: Invalid article_id",
+      msg: "400 - Bad Request: invalid_id",
     });
   } else if (err.code === "23502") {
     res.status(400).send({

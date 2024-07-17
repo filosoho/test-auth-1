@@ -124,5 +124,29 @@
         "votes": 1
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the given comment by comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "204": {
+        "description": "The comment was successfully deleted. No content is returned."
+      },
+      "400": {
+        "description": "Bad Request. Invalid comment_id."
+      },
+      "404": {
+        "description": "Not Found. Comment not found."
+      }
+    },
+    "example": {
+      "request": {
+        "method": "DELETE",
+        "url": "/api/comments/1"
+      },
+      "response": {
+        "status": 204
+      }
+    }
   }
 }

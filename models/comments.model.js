@@ -1,5 +1,9 @@
 const db = require("../db/connection.js");
-const { articleExists, checkUserExists } = require("./utils.model.js");
+const {
+  articleExists,
+  checkUserExists,
+  commentExists,
+} = require("./utils.model.js");
 const {
   validateUsername,
   validateCommentBody,
@@ -45,6 +49,32 @@ exports.addCommentForArticle = (username, body, article_id) => {
       return db
         .query(queryStr, [validUsername, validBody, article_id])
         .then(({ rows: [comment] }) => comment);
+    });
+  });
+};
+
+exports.deleteCommentById = (comment_id) => {
+  return commentExists(comment_id).then(() => {
+    if (comment_id <= 0) {
+      return Promise.reject({
+        status: 400,
+        msg: "400 - Bad Request: invalid_id",
+      });
+    }
+
+    const queryStr = `
+    DELETE FROM comments
+    WHERE comment_id = $1
+    RETURNING *;
+  `;
+
+    return db.query(queryStr, [comment_id]).then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "404 - Not Found: Comment not found",
+        });
+      }
     });
   });
 };
