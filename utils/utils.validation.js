@@ -46,3 +46,20 @@ exports.validateCommentBody = (body) => {
   }
   return Promise.resolve(body);
 };
+
+exports.validateIncVotes = (inc_votes) => {
+  if (inc_votes === undefined) {
+    return Promise.reject({
+      status: 400,
+      msg: "400 - Bad Request: Missing inc_votes in request body",
+    });
+  }
+  if (typeof inc_votes !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "400 - Bad Request: inc_votes must be a number",
+    });
+  }
+
+  return Promise.resolve(inc_votes);
+};

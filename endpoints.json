@@ -104,5 +104,25 @@
       "body": "This is a new comment!",
       "article_id": 1
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the vote count of an article by article_id",
+    "requestBody": {
+      "inc_votes": "an integer that indicates how much the votes property should be updated by"
+    },
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article...",
+        "created_at": "2020-11-03T09:12:00.000Z",
+        "votes": 1
+      }
+    }
   }
 }

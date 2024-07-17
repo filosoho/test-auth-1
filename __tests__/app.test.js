@@ -110,7 +110,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("GET 200: validates `created_at` field is a valid ISO 8601 date string", () => {
+    test("GET 200: validates created_at field is a valid ISO 8601 date string", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -154,13 +154,124 @@ describe("/api/articles/:article_id", () => {
           expect(body.msg).toBe("400 - Bad Request: Invalid article_id");
         });
     });
-
     test("GET 404: responds with status 404 for a non-existent article_id", () => {
       return request(app)
         .get("/api/articles/9999")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("404 - Not Found: Article not found");
+        });
+    });
+  });
+
+  describe("PATCH", () => {
+    test("PATCH 200: validates types of the article object properties when successfully updated the votes of an article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({ body: { article } }) => {
+          expect(article).toMatchObject({
+            article_id: 1,
+            votes: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("PATCH 200: successfully updates the article votes by 1", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body: { article: originalArticle } }) => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article).toMatchObject({
+                article_id: 1,
+                votes: expect.any(Number),
+              });
+
+              return request(app)
+                .get("/api/articles/1")
+                .expect(200)
+                .then(({ body: { article: updatedArticle } }) => {
+                  expect(updatedArticle.votes).toBe(originalArticle.votes + 1);
+                });
+            });
+        });
+    });
+    test("PATCH 200: successfully updates the article votes by -100", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body: { article: originalArticle } }) => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: -100 })
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article).toMatchObject({
+                article_id: 1,
+                votes: expect.any(Number),
+              });
+
+              return request(app)
+                .get("/api/articles/1")
+                .expect(200)
+                .then(({ body: { article: updatedArticle } }) => {
+                  expect(updatedArticle.votes).toBe(
+                    originalArticle.votes - 100
+                  );
+                });
+            });
+        });
+    });
+
+    test("PATCH 400: responds with an error for invalid article_id", () => {
+      return request(app)
+        .patch("/api/articles/not-a-number")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: Invalid article_id");
+        });
+    });
+
+    test("PATCH 400: responds with an error for invalid inc_votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: "not-a-number" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: inc_votes must be a number");
+        });
+    });
+
+    test("PATCH 404: responds with an error for non-existent article_id", () => {
+      return request(app)
+        .patch("/api/articles/9999")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("404 - Not Found: Article not found");
+        });
+    });
+
+    test("PATCH 400: responds with an error when inc_votes is missing in request body", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({})
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(
+            "400 - Bad Request: Missing inc_votes in request body"
+          );
         });
     });
   });

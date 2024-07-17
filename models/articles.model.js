@@ -1,4 +1,9 @@
 const db = require("../db/connection.js");
+const {
+  validateArticleId,
+  validateIncVotes,
+} = require("../utils/utils.validation.js");
+const { articleExists } = require("./utils.model.js");
 
 exports.fetchArticles = () => {
   const queryStr = `
@@ -32,5 +37,40 @@ exports.fetchArticleById = (article_id) => {
       });
     }
     return article;
+  });
+};
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+  return Promise.all([
+    validateArticleId(article_id),
+    validateIncVotes(inc_votes),
+  ]).then(([validArticleId, validIncVotes]) => {
+    return articleExists(validArticleId)
+      .then((exists) => {
+        if (!exists) {
+          return Promise.reject({
+            status: 404,
+            msg: "404 - Not Found: Article not found",
+          });
+        }
+
+        const queryStr = `
+            UPDATE articles
+            SET votes = votes + $1
+            WHERE article_id = $2
+            RETURNING *;
+          `;
+
+        return db.query(queryStr, [validIncVotes, validArticleId]);
+      })
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "404 - Not Found: Article not found",
+          });
+        }
+        return rows[0];
+      });
   });
 };
