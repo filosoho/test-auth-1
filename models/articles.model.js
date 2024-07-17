@@ -66,7 +66,14 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
 exports.fetchArticleById = (article_id) => {
   const articleId = Number(article_id);
 
-  const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
+  const queryStr = `
+  SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+  FROM articles
+  LEFT JOIN comments ON comments.article_id = articles.article_id
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id;
+`;
+
   return db.query(queryStr, [articleId]).then(({ rows }) => {
     const article = rows[0];
     if (!article) {
@@ -75,6 +82,7 @@ exports.fetchArticleById = (article_id) => {
         msg: "404 - Not Found: Article not found",
       });
     }
+    article.comment_count = Number(article.comment_count);
     return article;
   });
 };
