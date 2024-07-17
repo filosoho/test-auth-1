@@ -1,9 +1,6 @@
 const db = require("../db/connection.js");
 
 exports.articleExists = (article_id) => {
-  if (isNaN(article_id)) {
-    return Promise.resolve(false);
-  }
   const articleId = Number(article_id);
 
   const queryStr = `
@@ -18,10 +15,6 @@ exports.articleExists = (article_id) => {
 };
 
 exports.checkUserExists = (username) => {
-  if (typeof username !== "string") {
-    return Promise.resolve(false);
-  }
-
   const queryStr = `
     SELECT 1 
     FROM users

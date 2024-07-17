@@ -269,9 +269,7 @@ describe("/api/articles/:article_id", () => {
         .send({})
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            "400 - Bad Request: Missing inc_votes in request body"
-          );
+          expect(msg).toBe("400 - Bad Request: inc_votes must be a number");
         });
     });
   });
@@ -386,9 +384,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ body: "This is a new comment!" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            "400 - Bad Request: Missing username or body in request body"
-          );
+          expect(msg).toBe("400 - Bad Request: Missing required fields");
         });
     });
 
@@ -398,9 +394,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ username: "butter_bridge" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            "400 - Bad Request: Missing username or body in request body"
-          );
+          expect(msg).toBe("400 - Bad Request: Missing required fields");
         });
     });
 
@@ -422,7 +416,7 @@ describe("/api/articles/:article_id/comments", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("404 - Not Found: Article not found");
+          expect(msg).toBe("404 - Not Found: Article or User does not exist");
         });
     });
 
@@ -435,7 +429,7 @@ describe("/api/articles/:article_id/comments", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("404 - Not Found: User does not exist");
+          expect(msg).toBe("404 - Not Found: Article or User does not exist");
         });
     });
 

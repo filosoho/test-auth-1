@@ -35,6 +35,14 @@ app.use((err, req, res, next) => {
     res.status(400).send({
       msg: "400 - Bad Request: Invalid article_id",
     });
+  } else if (err.code === "23502") {
+    res.status(400).send({
+      msg: "400 - Bad Request: Missing required fields",
+    });
+  } else if (err.code === "23503") {
+    res.status(404).send({
+      msg: "404 - Not Found: Article or User does not exist",
+    });
   } else {
     next(err);
   }

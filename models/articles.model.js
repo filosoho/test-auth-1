@@ -41,11 +41,8 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.updateArticleVotes = (article_id, inc_votes) => {
-  return Promise.all([
-    validateArticleId(article_id),
-    validateIncVotes(inc_votes),
-  ]).then(([validArticleId, validIncVotes]) => {
-    return articleExists(validArticleId)
+  return Promise.all([validateIncVotes(inc_votes)]).then(([validIncVotes]) => {
+    return articleExists(article_id)
       .then((exists) => {
         if (!exists) {
           return Promise.reject({
@@ -61,7 +58,7 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
             RETURNING *;
           `;
 
-        return db.query(queryStr, [validIncVotes, validArticleId]);
+        return db.query(queryStr, [validIncVotes, article_id]);
       })
       .then(({ rows }) => {
         if (rows.length === 0) {
