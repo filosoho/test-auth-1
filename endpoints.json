@@ -12,6 +12,22 @@
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
+    "queryDescriptions": {
+      "author": "Filter articles by the username of the author",
+      "topic": "Filter articles by the topic",
+      "sort_by": "Sort articles by a valid column. Defaults to 'created_at'. Valid columns: article_id, title, author, body, topic, created_at, votes, comment_count",
+      "order": "Specify 'asc' for ascending or 'desc' for descending order. Defaults to 'desc'."
+    },
+    "exampleQueries": [
+      {
+        "query": "?sort_by=created_at&order=asc",
+        "description": "Sort articles by created_at in ascending order"
+      },
+      {
+        "query": "?sort_by=votes&order=desc",
+        "description": "Sort articles by votes in descending order"
+      }
+    ],
     "exampleResponse": {
       "articles": [
         {
