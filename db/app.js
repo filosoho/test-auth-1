@@ -2,65 +2,26 @@ const express = require("express");
 const app = express();
 const { getEndpoints } = require("../controllers/api.controller.js");
 const { getTopics } = require("../controllers/topics.controller.js");
+const articlesRouter = require("../routes/articles.js");
+const commentsRouter = require("../routes/comments.js");
+const usersRouter = require("../routes/users.js");
 const {
-  getArticles,
-  getArticleById,
-  patchArticleById,
-} = require("../controllers/articles.controller.js");
-const {
-  getCommentsByArticleId,
-  postCommentForArticle,
-  removeCommentById,
-} = require("../controllers/comments.controller.js");
-const { getAllUsers } = require("../controllers/users.controller.js");
-
-module.exports = app;
+  handle404s,
+  handleSpecificErrors,
+  handleGenericErrors,
+} = require("../middleware/errorHandlers.js");
 
 app.use(express.json());
 
 app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
-app.get("/api/articles", getArticles);
-app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-app.get("/api/users", getAllUsers);
 
-app.post("/api/articles/:article_id/comments", postCommentForArticle);
+app.use("/api/articles", articlesRouter);
+app.use("/api/comments", commentsRouter);
+app.use("/api/users", usersRouter);
 
-app.patch("/api/articles/:article_id", patchArticleById);
+app.all("*", handle404s);
+app.use(handleSpecificErrors);
+app.use(handleGenericErrors);
 
-app.delete("/api/comments/:comment_id", removeCommentById);
-
-app.all("*", (req, res, next) => {
-  res.status(404).send({ msg: "404 - Not Found: Endpoint does not exist" });
-});
-
-app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({
-      msg: "400 - Bad Request: invalid_id",
-    });
-  } else if (err.code === "23502") {
-    res.status(400).send({
-      msg: "400 - Bad Request: Missing required fields",
-    });
-  } else if (err.code === "23503") {
-    res.status(404).send({
-      msg: "404 - Not Found: Article or User does not exist",
-    });
-  } else {
-    next(err);
-  }
-});
-
-app.use((err, req, res, next) => {
-  if (err.status && err.msg) {
-    res.status(err.status).send({ msg: err.msg });
-  } else {
-    next(err);
-  }
-});
-
-app.use((err, req, res, next) => {
-  res.status(500).send({ msg: "Internal Server Error" });
-});
+module.exports = app;
