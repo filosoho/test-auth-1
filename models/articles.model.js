@@ -1,8 +1,12 @@
 const db = require("../db/connection.js");
 const { validateIncVotes } = require("../utils/utils.validation.js");
-const { articleExists, topicExists } = require("./utils.model.js");
+const {
+  articleExists,
+  topicExists,
+  authorExists,
+} = require("./utils.model.js");
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+exports.fetchArticles = (sort_by, order, topic, author) => {
   const validSortColumns = [
     "article_id",
     "title",
@@ -13,25 +17,35 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     "votes",
     "comment_count",
   ];
-  const validOrder = ["asc", "desc", "ASC", "DESC"];
 
-  if (!validSortColumns.includes(sort_by) || !validOrder.includes(order)) {
+  if (sort_by === "") {
+    sort_by = "created_at";
+  }
+  if (order === "") {
+    order = "DESC";
+  }
+
+  const orderUpper = order.toUpperCase();
+
+  const validOrder = ["ASC", "DESC"];
+
+  if (!validSortColumns.includes(sort_by) || !validOrder.includes(orderUpper)) {
     return Promise.reject({
       status: 400,
       msg: "400 - Bad Request: Invalid sort_by or order query parameter",
     });
   }
 
-  if (topic === "") {
+  if (topic === "" || author === "") {
     return Promise.reject({
       status: 400,
-      msg: "400 - Bad Request: Topic value missing",
+      msg: "400 - Bad Request: Topic or Author value missing",
     });
   }
 
   let queryStr = `
   SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
-  COUNT(comments.comment_id) AS comment_count
+  CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
   FROM articles
   LEFT JOIN comments ON comments.article_id = articles.article_id
 `;
@@ -43,31 +57,55 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     queryParams.push(topic);
   }
 
+  if (author) {
+    if (queryParams.length > 0) {
+      queryStr += ` AND articles.author = $${queryParams.length + 1}`;
+    } else {
+      queryStr += ` WHERE articles.author = $${queryParams.length + 1}`;
+    }
+    queryParams.push(author);
+  }
+
   queryStr += `
   GROUP BY articles.article_id
-  ORDER BY ${sort_by} ${order.toUpperCase()};
+  ORDER BY ${sort_by} ${orderUpper};
 `;
-  return topicExists(topic).then(() => {
-    return db.query(queryStr, queryParams).then(({ rows }) => {
-      if (rows.length === 0) {
+
+  const topicPromise = topic ? topicExists(topic) : Promise.resolve(true);
+  const authorPromise = author ? authorExists(author) : Promise.resolve(true);
+
+  return topicPromise
+    .then((topicExists) => {
+      if (!topicExists) {
         return Promise.reject({
           status: 404,
-          msg: "404 - Not Found: topic  not found",
+          msg: "404 - Not Found: Topic not found",
         });
       }
-      return rows.map((row) => ({
-        ...row,
-        comment_count: Number(row.comment_count),
-      }));
+      return authorPromise;
+    })
+    .then((authorExists) => {
+      if (!authorExists) {
+        return Promise.reject({
+          status: 404,
+          msg: "404 - Not Found: Author not found",
+        });
+      }
+      return db.query(queryStr, queryParams);
+    })
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return [];
+      }
+      return rows;
     });
-  });
 };
 
 exports.fetchArticleById = (article_id) => {
   const articleId = Number(article_id);
 
   const queryStr = `
-  SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+  SELECT articles.*, CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
   FROM articles
   LEFT JOIN comments ON comments.article_id = articles.article_id
   WHERE articles.article_id = $1
@@ -82,7 +120,6 @@ exports.fetchArticleById = (article_id) => {
         msg: "404 - Not Found: Article not found",
       });
     }
-    article.comment_count = Number(article.comment_count);
     return article;
   });
 };

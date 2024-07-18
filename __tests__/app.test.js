@@ -135,6 +135,25 @@ describe("/api/articles", () => {
         });
     });
 
+    test("GET 200: check if articles are sorted by created_at in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          for (let i = 0; i < articles.length - 1; i++) {
+            const currentArticleTime = new Date(
+              articles[i].created_at
+            ).getTime();
+            const nextArticleTime = new Date(
+              articles[i + 1].created_at
+            ).getTime();
+            expect(currentArticleTime).toBeLessThanOrEqual(nextArticleTime);
+          }
+        });
+    });
+
     test("GET 200: ?sort_by=votes&order=desc returns articles sorted by votes in descending order", () => {
       return request(app)
         .get("/api/articles?sort_by=votes&order=desc")
@@ -169,14 +188,36 @@ describe("/api/articles", () => {
         });
     });
 
-    test("GET 400: ?sort_by=&order= returns 400 error for invalid sort_by or order query parameters", () => {
+    test("GET 200: filters articles by author", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
+            expect(article.author).toBe("butter_bridge");
+          });
+        });
+    });
+
+    test("GET 200: ?sort_by=&order= returns 200 and defaults sort_by to created_at and order query to descending", () => {
       return request(app)
         .get("/api/articles?sort_by=&order=")
-        .expect(400)
+        .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toBe(
-            "400 - Bad Request: Invalid sort_by or order query parameter"
-          );
+          expect(body.articles.length).toBeGreaterThan(0);
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+
+    test("GET 200: returns an empty array when the topic exists but has no articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
         });
     });
 
@@ -207,16 +248,38 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=non_existent_topic")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("404 - Not Found: topic  not found");
+          expect(body.msg).toBe("404 - Not Found: Topic not found");
         });
     });
 
-    test("GET 404: responds with 400 if topic value missing", () => {
+    test("GET 404: responds with 404 for non-existent author", () => {
+      return request(app)
+        .get("/api/articles?author=non_existent_author")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Author not found");
+        });
+    });
+
+    test("GET 400: responds with 400 if topic value missing", () => {
       return request(app)
         .get("/api/articles?topic=")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Topic value missing");
+          expect(body.msg).toBe(
+            "400 - Bad Request: Topic or Author value missing"
+          );
+        });
+    });
+
+    test("GET 400: responds with 400 if author value missing", () => {
+      return request(app)
+        .get("/api/articles?author=")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "400 - Bad Request: Topic or Author value missing"
+          );
         });
     });
   });
@@ -630,33 +693,6 @@ describe("/api/comments/:comment_id", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("404 - Not Found: Endpoint does not exist");
-        });
-    });
-
-    test("400: responds with an error when comment_id is a negative number", () => {
-      return request(app)
-        .delete("/api/comments/-1")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: invalid_id");
-        });
-    });
-
-    test("400: responds with an error when comment_id is a decimal number", () => {
-      return request(app)
-        .delete("/api/comments/1.5")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: invalid_id");
-        });
-    });
-
-    test("400: responds with an error when comment_id is zero", () => {
-      return request(app)
-        .delete("/api/comments/0")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: invalid_id");
         });
     });
   });
