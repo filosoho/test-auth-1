@@ -2,13 +2,18 @@
 
 Northcoders News API is a backend service built to provide data programmatically, mimicking a real-world application like Reddit. The API is designed to interact with a PostgreSQL database using node-postgres and allows for various operations related to articles, comments, users, and topics.
 
+## Hosted Version
+
+Access the hosted version of the NC-News API at: [NC-NEWS](https://nc-news-api-backend.onrender.com/)
+
 ## Background
 
 The purpose of this project is to create an API that can be accessed programmatically for managing and retrieving data related to news articles, users, comments, and topics. This project shows how to build and structure a backend service similar to those used in real-world applications.
 
 ## Getting Started
 
-Prerequisites
+**Prerequisites**  
+Ensure you have the following installed on your machine:
 
 ```
 Node.js (https://nodejs.org/) (version 14.17.0 or higher)
@@ -16,6 +21,8 @@ PostgreSQL (https://www.postgresql.org/) (version 12 or higher)
 ```
 
 ## Installing
+
+To run the NC-News API server locally or deploy it to a production environment, follow the steps below.
 
 Clone the repository:
 
@@ -55,6 +62,20 @@ Ensure these `.env` files are listed in your `.gitignore` to prevent them from b
 npm run setup-dbs
 npm run seed
 ```
+
+## Running Tests
+
+Run the automated tests with:
+
+```
+npm test
+```
+
+## API Documentation
+
+Explore the full API documentation [here](https://nc-news-api-backend.onrender.com/api) for detailed information on available endpoints, request methods, and examples.
+
+Recommended extension to view JSON files [JSON Viewer Pro](https://chromewebstore.google.com/detail/json-viewer-pro/eifflpmocdbdmepbjaopkkhbfmdgijcc)
 
 ## API Endpoints
 
@@ -102,13 +123,15 @@ GET /api/articles/:article_id (comment count)
 
 - Adds a comment count to the response when retrieving a single article
 
-## Running Tests
+## Contributing
 
-Run the automated tests with:
+Contributions are welcome! Follow these steps to contribute:
 
-```
-npm test
-```
+1. Fork the repository.
+2. Create your feature branch (git checkout -b feature/AmazingFeature).
+3. Commit your changes (git commit -m 'Add some AmazingFeature').
+4. Push to the branch (git push origin feature/AmazingFeature).
+5. Open a pull request.
 
 ---
 
