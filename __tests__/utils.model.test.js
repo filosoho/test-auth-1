@@ -5,6 +5,8 @@ const {
   articleExists,
   commentExists,
   checkUserExists,
+  topicExists,
+  authorExists,
 } = require("../models/utils.model.js");
 
 beforeAll(() => {
@@ -72,6 +74,46 @@ describe("Tests for utils.model.js", () => {
       return commentExists("invalid_id").catch((err) => {
         expect(err).toBeDefined();
         expect(err.code).toBe("22P02");
+      });
+    });
+
+    describe("topicExists", () => {
+      test("should return true if the topic exists", () => {
+        return topicExists("cats").then((exists) => {
+          expect(exists).toBe(true);
+        });
+      });
+
+      test("should return false if the topic does not exist", () => {
+        return topicExists("non_existent_topic").then((exists) => {
+          expect(exists).toBe(false);
+        });
+      });
+
+      test("should handle invalid topic and resolve to false", () => {
+        return topicExists(null).then((exists) => {
+          expect(exists).toBe(false);
+        });
+      });
+    });
+
+    describe("authorExists", () => {
+      test("should return true if the author exists", () => {
+        return authorExists("butter_bridge").then((exists) => {
+          expect(exists).toBe(true);
+        });
+      });
+
+      test("should return false if the author does not exist", () => {
+        return authorExists("non_existent_author").then((exists) => {
+          expect(exists).toBe(false);
+        });
+      });
+
+      test("should handle invalid author and resolve to false", () => {
+        return authorExists(null).then((exists) => {
+          expect(exists).toBe(false);
+        });
       });
     });
   });

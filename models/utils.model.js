@@ -49,3 +49,15 @@ exports.topicExists = (topic) => {
     return rows.length > 0;
   });
 };
+
+exports.authorExists = (author) => {
+  const queryStr = `
+    SELECT 1
+    FROM users
+    WHERE username = $1;
+  `;
+
+  return db.query(queryStr, [author]).then(({ rows }) => {
+    return rows.length > 0;
+  });
+};

@@ -106,7 +106,7 @@
       "400": {
         "description": "Invalid article_id syntax",
         "exampleResponse": {
-          "msg": "400 - Bad Request: Invalid article_id"
+          "msg": "400 - Bad Request: invalid_id"
         }
       }
     }
