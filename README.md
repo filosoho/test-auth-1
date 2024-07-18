@@ -79,21 +79,33 @@ Recommended extension to view JSON files [JSON Viewer Pro](https://chromewebstor
 
 ## API Endpoints
 
-GET /api/topics
-
-- Responds with a list of topics
-
 GET /api
 
 - Responds with a list of available endpoints
 
-GET /api/articles/:article_id
+GET /api/users
 
-- Responds with a single article by article_id
+- Responds with a list of users
+
+GET /api/topics
+
+- Responds with a list of topics
 
 GET /api/articles
 
 - Responds with a list of articles
+
+GET /api/articles (queries)
+
+- Allows articles to be filtered and sorted
+
+GET /api/articles/:article_id (comment count)
+
+- Adds a comment count to the response when retrieving a single article
+
+GET /api/articles/:article_id
+
+- Responds with a single article by article_id
 
 GET /api/articles/:article_id/comments
 
@@ -110,18 +122,6 @@ PATCH /api/articles/:article_id
 DELETE /api/comments/:comment_id
 
 - Deletes a comment by comment_id
-
-GET /api/users
-
-- Responds with a list of users
-
-GET /api/articles (queries)
-
-- Allows articles to be filtered and sorted
-
-GET /api/articles/:article_id (comment count)
-
-- Adds a comment count to the response when retrieving a single article
 
 ## Contributing
 
