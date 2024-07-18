@@ -717,3 +717,27 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe("/api/users/:username", () => {
+  test("GET 200: responds with a user object when given a valid username", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toEqual({
+          username: "butter_bridge",
+          avatar_url: expect.any(String),
+          name: "jonny",
+        });
+      });
+  });
+
+  test("GET 404: responds with an error when given a non-existent username", () => {
+    return request(app)
+      .get("/api/users/non_existent_user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404 - Not Found: User not found");
+      });
+  });
+});
