@@ -29,11 +29,11 @@
       },
       {
         "query": "?topic='cooking'",
-        "description": "Filter articles by the topic 'cats'"
+        "description": "Filter articles by the topic 'cooking'"
       },
       {
         "query": "?topic=cooking&sort_by=votes&order=asc",
-        "description": "Filter articles by the topic 'cats' and sort by votes in ascending order"
+        "description": "Filter articles by the topic 'cooking' and sort by votes in ascending order"
       }
     ],
     "exampleResponse": {
