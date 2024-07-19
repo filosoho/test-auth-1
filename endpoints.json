@@ -4,176 +4,190 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "topics": [{ "slug": "football", "description": "Footie!" }]
+      }
     }
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "queryDescriptions": {
-      "author": "Filter articles by the username of the author",
-      "topic": "Filter articles by the topic",
-      "sort_by": "Sort articles by a valid column. Defaults to 'created_at'. Valid columns: article_id, title, author, body, topic, created_at, votes, comment_count",
-      "order": "Specify 'asc' for ascending or 'desc' for descending order. Defaults to 'desc'."
-    },
-    "exampleQueries": [
-      {
-        "query": "?sort_by=created_at&order=asc",
-        "description": "Sort articles by created_at in ascending order"
+    "details": {
+      "queries": ["author", "topic", "sort_by", "order"],
+      "queryDescriptions": {
+        "author": "Filter articles by the username of the author",
+        "topic": "Filter articles by the topic",
+        "sort_by": "Sort articles by a valid column. Defaults to 'created_at'. Valid columns: article_id, title, author, body, topic, created_at, votes, comment_count",
+        "order": "Specify 'asc' for ascending or 'desc' for descending order. Defaults to 'desc'."
       },
-      {
-        "query": "?sort_by=votes&order=desc",
-        "description": "Sort articles by votes in descending order"
-      },
-      {
-        "query": "?topic='cooking'",
-        "description": "Filter articles by the topic 'cooking'"
-      },
-      {
-        "query": "?topic=cooking&sort_by=votes&order=asc",
-        "description": "Filter articles by the topic 'cooking' and sort by votes in ascending order"
-      }
-    ],
-    "exampleResponse": {
-      "articles": [
+      "exampleQueries": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
+          "query": "?sort_by=created_at&order=asc",
+          "description": "Sort articles by created_at in ascending order"
+        },
+        {
+          "query": "?sort_by=votes&order=desc",
+          "description": "Sort articles by votes in descending order"
+        },
+        {
+          "query": "?topic='cooking'",
+          "description": "Filter articles by the topic 'cooking'"
+        },
+        {
+          "query": "?topic=cooking&sort_by=votes&order=asc",
+          "description": "Filter articles by the topic 'cooking' and sort by votes in ascending order"
         }
-      ]
+      ],
+      "exampleResponse": {
+        "articles": [
+          {
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article..",
+            "created_at": "2018-05-30T15:59:13.341Z",
+            "votes": 0,
+            "comment_count": 6
+          }
+        ]
+      }
     }
   },
   "GET /api/articles/:article_id": {
     "description": "serves an article object by its id",
-    "queries": [],
-    "exampleResponse": {
-      "article_id": 1,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      "author": "butter_bridge",
-      "body": "I find this existence challenging",
-      "created_at": "2020-07-09T20:11:00.000Z",
-      "title": "Living in the shadow of a great man",
-      "topic": "mitch",
-      "votes": 100,
-      "comment_count": 11
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "article_id": 1,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "votes": 100,
+        "comment_count": 11
+      }
     }
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments for a given article_id",
-    "queries": [],
-    "exampleResponse": {
-      "comments": [
-        {
-          "comment_id": 1,
-          "votes": 16,
-          "created_at": "2020-03-28T00:10:20.000Z",
-          "author": "butter_bridge",
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "article_id": 9
-        },
-        {
-          "comment_id": 2,
-          "votes": 14,
-          "created_at": "2020-11-01T12:56:20.000Z",
-          "author": "butter_bridge",
-          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-          "article_id": 1
-        },
-        {
-          "comment_id": 3,
-          "votes": 100,
-          "created_at": "2020-03-05T16:46:20.000Z",
-          "author": "icellusedkars",
-          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-          "article_id": 1
-        }
-      ]
-    },
-    "errorResponses": {
-      "404": {
-        "description": "Article not found for the given article_id",
-        "exampleResponse": {
-          "msg": "404 - Not Found: Article not found"
-        }
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "comments": [
+          {
+            "comment_id": 1,
+            "votes": 16,
+            "created_at": "2020-03-28T00:10:20.000Z",
+            "author": "butter_bridge",
+            "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            "article_id": 9
+          },
+          {
+            "comment_id": 2,
+            "votes": 14,
+            "created_at": "2020-11-01T12:56:20.000Z",
+            "author": "butter_bridge",
+            "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+            "article_id": 1
+          },
+          {
+            "comment_id": 3,
+            "votes": 100,
+            "created_at": "2020-03-05T16:46:20.000Z",
+            "author": "icellusedkars",
+            "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+            "article_id": 1
+          }
+        ]
       },
-      "400": {
-        "description": "Invalid article_id syntax",
-        "exampleResponse": {
-          "msg": "400 - Bad Request: invalid_id"
+      "errorResponses": {
+        "404": {
+          "description": "Article not found for the given article_id",
+          "exampleResponse": {
+            "msg": "404 - Not Found: Article not found"
+          }
+        },
+        "400": {
+          "description": "Invalid article_id syntax",
+          "exampleResponse": {
+            "msg": "400 - Bad Request: invalid_id"
+          }
         }
       }
     }
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Adds a comment for the specified article ID",
-    "requestBody": {
-      "username": "string",
-      "body": "string"
-    },
-    "exampleRequestBody": {
-      "username": "butter_bridge",
-      "body": "This is a new comment!"
-    },
-    "exampleResponse": {
-      "comment_id": 14,
-      "votes": 0,
-      "created_at": "2024-07-16T00:00:00.000Z",
-      "author": "butter_bridge",
-      "body": "This is a new comment!",
-      "article_id": 1
+    "details": {
+      "requestBody": {
+        "username": "string",
+        "body": "string"
+      },
+      "exampleRequestBody": {
+        "username": "butter_bridge",
+        "body": "This is a new comment!"
+      },
+      "exampleResponse": {
+        "comment_id": 14,
+        "votes": 0,
+        "created_at": "2024-07-16T00:00:00.000Z",
+        "author": "butter_bridge",
+        "body": "This is a new comment!",
+        "article_id": 1
+      }
     }
   },
   "PATCH /api/articles/:article_id": {
     "description": "updates the vote count of an article by article_id",
-    "requestBody": {
-      "inc_votes": "an integer that indicates how much the votes property should be updated by"
-    },
-    "exampleRequest": {
-      "inc_votes": 1
-    },
-    "exampleResponse": {
-      "article": {
-        "article_id": 1,
-        "title": "Seafood substitutions are increasing",
-        "topic": "cooking",
-        "author": "weegembump",
-        "body": "Text from the article...",
-        "created_at": "2020-11-03T09:12:00.000Z",
-        "votes": 1
+    "details": {
+      "requestBody": {
+        "inc_votes": "an integer that indicates how much the votes property should be updated by"
+      },
+      "exampleRequest": {
+        "inc_votes": 1
+      },
+      "exampleResponse": {
+        "article": {
+          "article_id": 1,
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article...",
+          "created_at": "2020-11-03T09:12:00.000Z",
+          "votes": 1
+        }
       }
     }
   },
   "GET /api/comments/:comment_id": {
     "description": "Retrieves a comment by its ID.",
-    "queries": [],
-    "exampleResponse": {
-      "comment": {
-        "comment_id": 1,
-        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        "article_id": 9,
-        "author": "butter_bridge",
-        "votes": 16,
-        "created_at": "2020-04-06T12:17:00.000Z"
-      }
-    },
-    "errorResponses": {
-      "404": {
-        "description": "Comment not found for the given comment_id",
-        "exampleResponse": {
-          "msg": "404 - Not Found: Comment not found"
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "comment": {
+          "comment_id": 1,
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": 9,
+          "author": "butter_bridge",
+          "votes": 16,
+          "created_at": "2020-04-06T12:17:00.000Z"
         }
       },
-      "400": {
-        "description": "Invalid comment_id syntax",
-        "exampleResponse": {
-          "msg": "400 - Bad Request: invalid_id"
+      "errorResponses": {
+        "404": {
+          "description": "Comment not found for the given comment_id",
+          "exampleResponse": {
+            "msg": "404 - Not Found: Comment not found"
+          }
+        },
+        "400": {
+          "description": "Invalid comment_id syntax",
+          "exampleResponse": {
+            "msg": "400 - Bad Request: invalid_id"
+          }
         }
       }
     }
@@ -181,94 +195,102 @@
 
   "PATCH /api/comments/:comment_id": {
     "description": "Updates the votes on a comment given the comment's comment_id. The request body should include `inc_votes` indicating how much to change the votes by.",
-    "requestBody": {
-      "inc_votes": "number"
-    },
-    "exampleRequestBody": {
-      "inc_votes": 1
-    },
-    "exampleResponse": {
-      "comment": {
-        "comment_id": 1,
-        "votes": 101,
-        "created_at": "2020-03-28T00:10:20.000Z",
-        "author": "butter_bridge",
-        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        "article_id": 9
-      }
-    },
-    "errorResponses": {
-      "404": {
-        "description": "Comment not found for the given comment_id",
-        "exampleResponse": {
-          "msg": "404 - Not Found: Comment not found"
+    "details": {
+      "requestBody": {
+        "inc_votes": "number"
+      },
+      "exampleRequestBody": {
+        "inc_votes": 1
+      },
+      "exampleResponse": {
+        "comment": {
+          "comment_id": 1,
+          "votes": 101,
+          "created_at": "2020-03-28T00:10:20.000Z",
+          "author": "butter_bridge",
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": 9
         }
       },
-      "400": {
-        "description": "Bad Request. Invalid comment_id or inc_votes",
-        "exampleResponse": {
-          "msg": "400 - Bad Request: Invalid comment_id or inc_votes"
+      "errorResponses": {
+        "404": {
+          "description": "Comment not found for the given comment_id",
+          "exampleResponse": {
+            "msg": "404 - Not Found: Comment not found"
+          }
+        },
+        "400": {
+          "description": "Bad Request. Invalid comment_id or inc_votes",
+          "exampleResponse": {
+            "msg": "400 - Bad Request: Invalid comment_id or inc_votes"
+          }
         }
       }
     }
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes the given comment by comment_id",
-    "queries": [],
-    "exampleResponse": {
-      "204": {
-        "description": "The comment was successfully deleted. No content is returned."
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "204": {
+          "description": "The comment was successfully deleted. No content is returned."
+        },
+        "400": {
+          "description": "Bad Request. Invalid comment_id."
+        },
+        "404": {
+          "description": "Not Found. Comment not found."
+        }
       },
-      "400": {
-        "description": "Bad Request. Invalid comment_id."
-      },
-      "404": {
-        "description": "Not Found. Comment not found."
-      }
-    },
-    "example": {
-      "request": {
-        "method": "DELETE",
-        "url": "/api/comments/1"
-      },
-      "response": {
-        "status": 204
+      "example": {
+        "request": {
+          "method": "DELETE",
+          "url": "/api/comments/1"
+        },
+        "response": {
+          "status": 204
+        }
       }
     }
   },
   "GET /api/users": {
     "description": "Retrieves a list of all users from the database. Each user object contains the username, name, and avatar URL of the user.",
-    "queries": [],
-    "exampleResponse": {
-      "users": [
-        {
-          "username": "bobbyG",
-          "name": "Bobby G",
-          "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        },
-        {
-          "username": "code-master",
-          "name": "Code Master",
-          "avatar_url": "https://images.unsplash.com/photo-1511376777868-611b54f68947?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        }
-      ]
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "users": [
+          {
+            "username": "bobbyG",
+            "name": "Bobby G",
+            "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          },
+          {
+            "username": "code-master",
+            "name": "Code Master",
+            "avatar_url": "https://images.unsplash.com/photo-1511376777868-611b54f68947?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          }
+        ]
+      }
     }
   },
   "GET /api/users/:username": {
     "description": "Retrieves a user object by the given username",
-    "queries": [],
-    "exampleResponse": {
-      "user": {
-        "username": "butter_bridge",
-        "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "name": "jonny"
-      }
-    },
-    "errorResponses": {
-      "404": {
-        "description": "User not found for the given username",
-        "exampleResponse": {
-          "msg": "404 - Not Found: User not found"
+    "details": {
+      "queries": [],
+      "exampleResponse": {
+        "user": {
+          "username": "butter_bridge",
+          "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          "name": "jonny"
+        }
+      },
+      "errorResponses": {
+        "404": {
+          "description": "User not found for the given username",
+          "exampleResponse": {
+            "msg": "404 - Not Found: User not found"
+          }
         }
       }
     }

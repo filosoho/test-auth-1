@@ -155,3 +155,36 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
       });
   });
 };
+
+exports.addArticle = (newArticle) => {
+  const {
+    author,
+    title,
+    body,
+    topic,
+    article_img_url = "http://example.com/img.png",
+    votes = 0,
+    created_at = new Date().toISOString(),
+  } = newArticle;
+
+  const queryStr = `
+    INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *;
+  `;
+
+  return db
+    .query(queryStr, [
+      title,
+      topic,
+      author,
+      body,
+      created_at,
+      votes,
+      article_img_url,
+    ])
+    .then(({ rows }) => {
+      const article = rows[0];
+      return { ...article, comment_count: 0 };
+    });
+};
