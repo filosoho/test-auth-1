@@ -67,8 +67,8 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles.length).toBeGreaterThan(0);
-          articles.forEach((article) => {
+          expect(articles.articles.length).toBeGreaterThan(0);
+          articles.articles.forEach((article) => {
             expect(article).toHaveProperty("author");
             expect(article).toHaveProperty("title");
             expect(article).toHaveProperty("article_id");
@@ -86,7 +86,9 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
     test("GET 200: validates types of the article object properties without the body property", () => {
@@ -94,8 +96,8 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles.length).toBeGreaterThan(0);
-          articles.forEach((article) => {
+          expect(articles.articles.length).toBeGreaterThan(0);
+          articles.articles.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
                 article_id: expect.any(Number),
@@ -115,7 +117,7 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
-          articles.forEach((article) => {
+          articles.articles.forEach((article) => {
             expect(Date.parse(article.created_at)).not.toBeNaN();
             const date = new Date(article.created_at);
             expect(date.toISOString()).toBe(article.created_at);
@@ -128,8 +130,8 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=created_at&order=asc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBeGreaterThan(0);
-          expect(body.articles).toBeSortedBy("created_at", {
+          expect(body.articles.articles.length).toBeGreaterThan(0);
+          expect(body.articles.articles).toBeSortedBy("created_at", {
             descending: false,
           });
         });
@@ -141,13 +143,13 @@ describe("/api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles.length).toBeGreaterThan(0);
-          for (let i = 0; i < articles.length - 1; i++) {
+          expect(articles.articles.length).toBeGreaterThan(0);
+          for (let i = 0; i < articles.articles.length - 1; i++) {
             const currentArticleTime = new Date(
-              articles[i].created_at
+              articles.articles[i].created_at
             ).getTime();
             const nextArticleTime = new Date(
-              articles[i + 1].created_at
+              articles.articles[i + 1].created_at
             ).getTime();
             expect(currentArticleTime).toBeLessThanOrEqual(nextArticleTime);
           }
@@ -159,8 +161,10 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=votes&order=desc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBeGreaterThan(0);
-          expect(body.articles).toBeSortedBy("votes", { descending: true });
+          expect(body.articles.articles.length).toBeGreaterThan(0);
+          expect(body.articles.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
         });
     });
 
@@ -169,8 +173,8 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=comment_count&order=asc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBeGreaterThan(0);
-          expect(body.articles).toBeSortedBy("comment_count", {
+          expect(body.articles.articles.length).toBeGreaterThan(0);
+          expect(body.articles.articles).toBeSortedBy("comment_count", {
             descending: false,
           });
         });
@@ -181,8 +185,8 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=cats")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBeGreaterThan(0);
-          body.articles.forEach((article) => {
+          expect(body.articles.articles.length).toBeGreaterThan(0);
+          body.articles.articles.forEach((article) => {
             expect(article.topic).toBe("cats");
           });
         });
@@ -193,8 +197,8 @@ describe("/api/articles", () => {
         .get("/api/articles?author=butter_bridge")
         .expect(200)
         .then(({ body: { articles } }) => {
-          expect(articles.length).toBeGreaterThan(0);
-          articles.forEach((article) => {
+          expect(articles.articles.length).toBeGreaterThan(0);
+          articles.articles.forEach((article) => {
             expect(article.author).toBe("butter_bridge");
           });
         });
@@ -205,8 +209,8 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=&order=")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBeGreaterThan(0);
-          expect(body.articles).toBeSortedBy("created_at", {
+          expect(body.articles.articles.length).toBeGreaterThan(0);
+          expect(body.articles.articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
@@ -217,7 +221,7 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=paper")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toEqual([]);
+          expect(body.articles.articles).toEqual([]);
         });
     });
 
@@ -281,6 +285,65 @@ describe("/api/articles", () => {
             "400 - Bad Request: Topic or Author value missing"
           );
         });
+    });
+
+    describe("Pagination", () => {
+      test("GET 200: returns paginated articles with default limit of 10", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles.articles).toHaveLength(10);
+            expect(body.articles).toHaveProperty(
+              "total_count",
+              expect.any(Number)
+            );
+          });
+      });
+
+      test("GET 200: returns paginated articles with specified limit and page", () => {
+        return request(app)
+          .get("/api/articles?limit=5&page=2")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles.articles).toHaveLength(5);
+            expect(body.articles).toHaveProperty(
+              "total_count",
+              expect.any(Number)
+            );
+          });
+      });
+
+      test("GET 200: returns paginated articles with a default limit of 10 and page 1, when limit and page queries passed as empty", () => {
+        return request(app)
+          .get("/api/articles?limit=&page=")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles.articles).toHaveLength(10);
+            expect(body.articles).toHaveProperty(
+              "total_count",
+              expect.any(Number)
+            );
+          });
+      });
+
+      test("GET 400: responds with an error for invalid limit", () => {
+        return request(app)
+          .get("/api/articles?limit=invalid")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("400 - Bad Request: invalid_id");
+          });
+      });
+
+      test("GET 400: responds with an error for invalid page", () => {
+        return request(app)
+          .get("/api/articles?page=invalid")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("400 - Bad Request: invalid_id");
+          });
+      });
     });
   });
 

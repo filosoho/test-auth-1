@@ -6,11 +6,17 @@ const {
 } = require("../models/articles.model.js");
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by = "created_at", order = "desc", topic, author } = req.query;
-
-  fetchArticles(sort_by, order, topic, author)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  const {
+    sort_by = "created_at",
+    order = "desc",
+    topic,
+    author,
+    limit,
+    page,
+  } = req.query;
+  fetchArticles(sort_by, order, topic, author, limit, page)
+    .then((articles, total_count) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch(next);
 };
