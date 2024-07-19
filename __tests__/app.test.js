@@ -656,6 +656,159 @@ describe("/api/articles/:article_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
+  describe("GET", () => {
+    describe("/api/comments/:comment_id", () => {
+      test("GET 200: responds with a comment object when given a valid comment_id", () => {
+        return request(app)
+          .get("/api/comments/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).toEqual({
+              comment_id: 1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              article_id: 9,
+              author: "butter_bridge",
+              votes: expect.any(Number),
+              created_at: "2020-04-06T12:17:00.000Z",
+            });
+          });
+      });
+
+      test("GET 404: responds with an error when given a non-existent comment_id", () => {
+        return request(app)
+          .get("/api/comments/9999")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("404 - Not Found: Comment not found");
+          });
+      });
+
+      test("GET 400: responds with an error when given an invalid comment_id", () => {
+        return request(app)
+          .get("/api/comments/invalid_id")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("400 - Bad Request: invalid_id");
+          });
+      });
+    });
+  });
+
+  describe("PATCH", () => {
+    test("PATCH 200: returns an object with a requested comment_id and valid property types", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: 1,
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+    });
+
+    test("PATCH 200: updates votes for a comment successfully by a positive number", () => {
+      return request(app)
+        .get("/api/comments/1")
+        .expect(200)
+        .then(({ body }) => {
+          const {
+            comment: { votes: originalVotes },
+          } = body;
+          expect(originalVotes).toBeDefined();
+          expect(originalVotes).toBe(17);
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+              const { comment: updatedComment } = body;
+              expect(updatedComment).toEqual({
+                comment_id: 1,
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                article_id: 9,
+                author: "butter_bridge",
+                votes: originalVotes + 1,
+                created_at: "2020-04-06T12:17:00.000Z",
+              });
+            });
+        });
+    });
+
+    test("PATCH 200: updates votes for a comment successfully by a negative number", () => {
+      return request(app)
+        .get("/api/comments/1")
+        .expect(200)
+        .then(({ body }) => {
+          const {
+            comment: { votes: originalVotes },
+          } = body;
+          expect(originalVotes).toBeDefined();
+          expect(originalVotes).toBe(18);
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -10 })
+            .expect(200)
+            .then(({ body }) => {
+              const { comment: updatedComment } = body;
+              expect(updatedComment).toEqual({
+                comment_id: 1,
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                article_id: 9,
+                author: "butter_bridge",
+                votes: originalVotes - 10,
+                created_at: "2020-04-06T12:17:00.000Z",
+              });
+            });
+        });
+    });
+
+    test("PATCH 404: responds with an error when given a non-existent comment_id", () => {
+      return request(app)
+        .patch("/api/comments/99087")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Comment not found");
+        });
+    });
+
+    test("PATCH 400: responds with an error when given not a valid comment_id", () => {
+      return request(app)
+        .patch("/api/comments/not-valid-comment_id")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+
+    test("PATCH 400: responds with an error when the request body is invalid", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ invalid_key: 1 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("PATCH 400: responds with an error when inc_votes is not a number", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "string" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+  });
+
   describe("DELETE", () => {
     test("204: successfully deletes the comment and returns no content", () => {
       return request(app)

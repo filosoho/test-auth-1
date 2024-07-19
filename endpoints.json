@@ -150,6 +150,68 @@
       }
     }
   },
+  "GET /api/comments/:comment_id": {
+    "description": "Retrieves a comment by its ID.",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 9,
+        "author": "butter_bridge",
+        "votes": 16,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    },
+    "errorResponses": {
+      "404": {
+        "description": "Comment not found for the given comment_id",
+        "exampleResponse": {
+          "msg": "404 - Not Found: Comment not found"
+        }
+      },
+      "400": {
+        "description": "Invalid comment_id syntax",
+        "exampleResponse": {
+          "msg": "400 - Bad Request: invalid_id"
+        }
+      }
+    }
+  },
+
+  "PATCH /api/comments/:comment_id": {
+    "description": "Updates the votes on a comment given the comment's comment_id. The request body should include `inc_votes` indicating how much to change the votes by.",
+    "requestBody": {
+      "inc_votes": "number"
+    },
+    "exampleRequestBody": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "votes": 101,
+        "created_at": "2020-03-28T00:10:20.000Z",
+        "author": "butter_bridge",
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 9
+      }
+    },
+    "errorResponses": {
+      "404": {
+        "description": "Comment not found for the given comment_id",
+        "exampleResponse": {
+          "msg": "404 - Not Found: Comment not found"
+        }
+      },
+      "400": {
+        "description": "Bad Request. Invalid comment_id or inc_votes",
+        "exampleResponse": {
+          "msg": "400 - Bad Request: Invalid comment_id or inc_votes"
+        }
+      }
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes the given comment by comment_id",
     "queries": [],
