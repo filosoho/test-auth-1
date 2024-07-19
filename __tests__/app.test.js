@@ -283,6 +283,77 @@ describe("/api/articles", () => {
         });
     });
   });
+
+  describe("POST", () => {
+    test("POST 201: adds a new article and responds with the newly added article", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        title: "New Article Title",
+        body: "This is the body of the new article.",
+        topic: "mitch",
+        article_img_url: "http://example.com/img.png",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toEqual({
+            article_id: expect.any(Number),
+            author: "butter_bridge",
+            title: "New Article Title",
+            body: "This is the body of the new article.",
+            topic: "mitch",
+            article_img_url: "http://example.com/img.png",
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+
+          expect(new Date(article.created_at).toISOString()).toBe(
+            article.created_at
+          );
+        });
+    });
+
+    test("POST 400: responds with an error when required fields are missing", () => {
+      const newArticle = {
+        author: "butter_bridge",
+        title: "New Article Title",
+        body: "This is the body of the new article.",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("POST 404: responds with an error when author does not exist", () => {
+      const newArticle = {
+        author: "non_existent_author",
+        title: "New Article Title",
+        body: "This is the body of the new article.",
+        topic: "mitch",
+        article_img_url: "http://example.com/img.png",
+      };
+
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "404 - Not Found: Article or User does not exist"
+          );
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
