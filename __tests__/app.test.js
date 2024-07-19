@@ -66,9 +66,13 @@ describe("/api/articles", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles.articles.length).toBeGreaterThan(0);
-          articles.articles.forEach((article) => {
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          const articlesList = body.articles;
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
             expect(article).toHaveProperty("author");
             expect(article).toHaveProperty("title");
             expect(article).toHaveProperty("article_id");
@@ -79,14 +83,21 @@ describe("/api/articles", () => {
             expect(article).toHaveProperty("comment_count");
             expect(article).not.toHaveProperty("body");
           });
+          expect(articlesList).toHaveProperty(
+            "total_count",
+            expect.any(Number)
+          );
         });
     });
     test("GET 200: responds with articles sorted by created_at in descending order", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles.articles).toBeSortedBy("created_at", {
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
@@ -95,9 +106,13 @@ describe("/api/articles", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles.articles.length).toBeGreaterThan(0);
-          articles.articles.forEach((article) => {
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          const articlesList = body.articles;
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
                 article_id: expect.any(Number),
@@ -107,17 +122,26 @@ describe("/api/articles", () => {
                 created_at: expect.any(String),
                 votes: expect.any(Number),
                 article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
               })
             );
           });
+          expect(articlesList).toHaveProperty(
+            "total_count",
+            expect.any(Number)
+          );
         });
     });
     test("GET 200: validates created_at field is a valid ISO 8601 date string", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          articles.articles.forEach((article) => {
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+
+          articles.forEach((article) => {
             expect(Date.parse(article.created_at)).not.toBeNaN();
             const date = new Date(article.created_at);
             expect(date.toISOString()).toBe(article.created_at);
@@ -130,8 +154,11 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=created_at&order=asc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles.length).toBeGreaterThan(0);
-          expect(body.articles.articles).toBeSortedBy("created_at", {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          expect(articles).toBeSortedBy("created_at", {
             descending: false,
           });
         });
@@ -142,14 +169,16 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=created_at&order=asc")
         .expect(200)
         .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.articles.length).toBeGreaterThan(0);
-          for (let i = 0; i < articles.articles.length - 1; i++) {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          for (let i = 0; i < articles.length - 1; i++) {
             const currentArticleTime = new Date(
-              articles.articles[i].created_at
+              articles[i].created_at
             ).getTime();
             const nextArticleTime = new Date(
-              articles.articles[i + 1].created_at
+              articles[i + 1].created_at
             ).getTime();
             expect(currentArticleTime).toBeLessThanOrEqual(nextArticleTime);
           }
@@ -161,8 +190,11 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=votes&order=desc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles.length).toBeGreaterThan(0);
-          expect(body.articles.articles).toBeSortedBy("votes", {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          expect(articles).toBeSortedBy("votes", {
             descending: true,
           });
         });
@@ -173,8 +205,11 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=comment_count&order=asc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles.length).toBeGreaterThan(0);
-          expect(body.articles.articles).toBeSortedBy("comment_count", {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          expect(articles).toBeSortedBy("comment_count", {
             descending: false,
           });
         });
@@ -185,8 +220,11 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=cats")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles.length).toBeGreaterThan(0);
-          body.articles.articles.forEach((article) => {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
             expect(article.topic).toBe("cats");
           });
         });
@@ -196,9 +234,12 @@ describe("/api/articles", () => {
       return request(app)
         .get("/api/articles?author=butter_bridge")
         .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles.articles.length).toBeGreaterThan(0);
-          articles.articles.forEach((article) => {
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
             expect(article.author).toBe("butter_bridge");
           });
         });
@@ -209,8 +250,11 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=&order=")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles.length).toBeGreaterThan(0);
-          expect(body.articles.articles).toBeSortedBy("created_at", {
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles.length).toBeGreaterThan(0);
+          expect(articles).toBeSortedBy("created_at", {
             descending: true,
           });
         });
@@ -221,7 +265,10 @@ describe("/api/articles", () => {
         .get("/api/articles?topic=paper")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.articles).toEqual([]);
+          const {
+            articles: { articles },
+          } = body;
+          expect(articles).toEqual([]);
         });
     });
 
@@ -293,8 +340,12 @@ describe("/api/articles", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
-            expect(body.articles.articles).toHaveLength(10);
-            expect(body.articles).toHaveProperty(
+            const {
+              articles: { articles },
+            } = body;
+            const articlesList = body.articles;
+            expect(articles).toHaveLength(10);
+            expect(articlesList).toHaveProperty(
               "total_count",
               expect.any(Number)
             );
@@ -306,8 +357,12 @@ describe("/api/articles", () => {
           .get("/api/articles?limit=5&page=2")
           .expect(200)
           .then(({ body }) => {
-            expect(body.articles.articles).toHaveLength(5);
-            expect(body.articles).toHaveProperty(
+            const {
+              articles: { articles },
+            } = body;
+            const articlesList = body.articles;
+            expect(articles).toHaveLength(5);
+            expect(articlesList).toHaveProperty(
               "total_count",
               expect.any(Number)
             );
@@ -319,8 +374,12 @@ describe("/api/articles", () => {
           .get("/api/articles?limit=&page=")
           .expect(200)
           .then(({ body }) => {
-            expect(body.articles.articles).toHaveLength(10);
-            expect(body.articles).toHaveProperty(
+            const {
+              articles: { articles },
+            } = body;
+            const articlesList = body.articles;
+            expect(articles).toHaveLength(10);
+            expect(articlesList).toHaveProperty(
               "total_count",
               expect.any(Number)
             );

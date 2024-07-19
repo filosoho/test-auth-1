@@ -14,12 +14,20 @@
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "details": {
-      "queries": ["author", "topic", "sort_by", "order"],
+      "queries": ["author", "topic", "sort_by", "order", "limit", "page"],
       "queryDescriptions": {
         "author": "Filter articles by the username of the author",
         "topic": "Filter articles by the topic",
         "sort_by": "Sort articles by a valid column. Defaults to 'created_at'. Valid columns: article_id, title, author, body, topic, created_at, votes, comment_count",
-        "order": "Specify 'asc' for ascending or 'desc' for descending order. Defaults to 'desc'."
+        "order": "Specify 'asc' for ascending or 'desc' for descending order. Defaults to 'desc'",
+        "limit": {
+          "description": "limits the number of responses",
+          "default": 10
+        },
+        "page": {
+          "description": "page number",
+          "default": 1
+        }
       },
       "exampleQueries": [
         {
@@ -42,6 +50,7 @@
       "exampleResponse": {
         "articles": [
           {
+            "article_id": 33,
             "title": "Seafood substitutions are increasing",
             "topic": "cooking",
             "author": "weegembump",
@@ -50,7 +59,8 @@
             "votes": 0,
             "comment_count": 6
           }
-        ]
+        ],
+        "total_count": 12
       }
     }
   },
@@ -90,7 +100,7 @@
         }
       },
       "response": {
-        "description": "The newly added article.",
+        "description": "Responds with the newly added article.",
         "example": {
           "article": {
             "article_id": 14,
