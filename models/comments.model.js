@@ -31,6 +31,22 @@ exports.fetchCommentsByArticleId = (article_id) => {
   });
 };
 
+exports.fetchCommentById = (comment_id) => {
+  const queryStr = `
+    SELECT * FROM comments WHERE comment_id = $1;
+  `;
+
+  return db.query(queryStr, [comment_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "404 - Not Found: Comment not found",
+      });
+    }
+    return rows[0];
+  });
+};
+
 exports.addCommentForArticle = (username, body, article_id) => {
   return Promise.all([
     validateUsername(username),
@@ -49,6 +65,32 @@ exports.addCommentForArticle = (username, body, article_id) => {
       return db
         .query(queryStr, [validUsername, validBody, article_id])
         .then(({ rows: [comment] }) => comment);
+    });
+  });
+};
+
+exports.updateCommentVotes = (comment_id, inc_votes) => {
+  return commentExists(comment_id).then((exists) => {
+    if (!exists) {
+      return Promise.reject({
+        status: 404,
+        msg: "404 - Not Found: Comment not found",
+      });
+    }
+
+    const queryStr = `
+    UPDATE comments
+    SET votes = votes + $2
+    WHERE comment_id = $1
+    RETURNING *;
+  `;
+    return db.query(queryStr, [comment_id, inc_votes]).then(({ rows }) => {
+      if (rows === 0) {
+        return res.status(404).send({
+          msg: "404 - Not Found: Comment not found",
+        });
+      }
+      return rows[0];
     });
   });
 };
