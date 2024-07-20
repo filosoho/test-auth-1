@@ -1,10 +1,10 @@
 const express = require("express");
 const app = express();
 const { getEndpoints } = require("../controllers/api.controller.js");
-const { getTopics } = require("../controllers/topics.controller.js");
 const articlesRouter = require("../routes/articles.js");
 const commentsRouter = require("../routes/comments.js");
 const usersRouter = require("../routes/users.js");
+const topicsRouter = require("../routes/topics.js");
 const {
   handle404s,
   handleSpecificErrors,
@@ -14,8 +14,8 @@ const {
 app.use(express.json());
 
 app.get("/api", getEndpoints);
-app.get("/api/topics", getTopics);
 
+app.use("/api/topics", topicsRouter);
 app.use("/api/articles", articlesRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/users", usersRouter);

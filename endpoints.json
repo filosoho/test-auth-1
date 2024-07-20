@@ -11,6 +11,30 @@
       }
     }
   },
+  "POST /api/topics": {
+    "description": "Creates a new topic with a unique slug and description.",
+    "requestBody": {
+      "slug": "string",
+      "description": "string"
+    },
+    "responses": {
+      "201": {
+        "description": "Returns the newly created topic object.",
+        "exampleResponse": {
+          "topic": {
+            "slug": "new-topic",
+            "description": "A new topic"
+          }
+        }
+      },
+      "400": {
+        "description": "Returns an error message for invalid or missing fields.",
+        "exampleResponse": {
+          "msg": "400 - Bad Request: Missing required fields"
+        }
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "details": {
@@ -241,9 +265,9 @@
           }
         },
         "400": {
-          "description": "Invalid article_id syntax",
+          "description": "Invalid query parameters",
           "exampleResponse": {
-            "msg": "400 - Bad Request: invalid_id"
+            "msg": "400 - Bad Request: Invalid query parameters"
           }
         }
       }
