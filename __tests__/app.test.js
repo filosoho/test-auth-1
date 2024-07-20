@@ -62,7 +62,7 @@ describe("/api/topics", () => {
 
 describe("/api/articles", () => {
   describe("GET", () => {
-    test("GET 200: responds with status 200 and an array of article objects without a body property sorted by date in descending order", () => {
+    test("GET 200: responds with status 200 and an array of article objects without a body property by default sorted by date in descending order", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -245,7 +245,7 @@ describe("/api/articles", () => {
         });
     });
 
-    test("GET 200: ?sort_by=&order= returns 200 and defaults sort_by to created_at and order query to descending", () => {
+    test("GET 200: ?sort_by=&order= when no arguments are passed to sort_by and order, returns 200 and defaults sort_by to created_at and order query to descending", () => {
       return request(app)
         .get("/api/articles?sort_by=&order=")
         .expect(200)
