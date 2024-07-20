@@ -743,6 +743,40 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+
+  describe("DELETE", () => {
+    test("204: deletes an article and its respective comments", () => {
+      return request(app)
+        .delete("/api/articles/3")
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .get("/api/articles/3")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("404 - Not Found: Article not found");
+            });
+        });
+    });
+
+    test("404: responds with an error if the article does not exist", () => {
+      return request(app)
+        .delete("/api/articles/9999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Article not found");
+        });
+    });
+
+    test("400: responds with an error if the article_id is invalid", () => {
+      return request(app)
+        .delete("/api/articles/invalid-id")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
