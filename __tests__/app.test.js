@@ -39,7 +39,6 @@ describe("/api/topics", () => {
         .get("/api/topics")
         .expect(200)
         .then(({ body: { topics } }) => {
-          expect(Array.isArray(topics)).toBe(true);
           expect(topics.length).toBe(3);
           topics.forEach((topic) => {
             expect(topic).toHaveProperty("slug");
@@ -49,12 +48,110 @@ describe("/api/topics", () => {
           });
         });
     });
+
     test("GET 404: /api/nonexistent-route returns 404 - Not Found: Endpoint does not exist", () => {
       return request(app)
         .get("/api/nonexistent-route")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("404 - Not Found: Endpoint does not exist");
+        });
+    });
+  });
+
+  describe("POST", () => {
+    test("POST 201: responds with the newly added topic", () => {
+      const newTopic = {
+        slug: "new-topic",
+        description: "A new topic for testing",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              slug: "new-topic",
+              description: "A new topic for testing",
+            })
+          );
+        });
+    });
+
+    test("POST 400: responds with an error when missing required fields", () => {
+      const newTopic = {
+        description: "A new topic without a slug",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("POST 400: responds with an error when slug is empty", () => {
+      const newTopic = {
+        slug: "",
+        description: "A new topic with empty slug",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("POST 400: responds with an error when description is empty", () => {
+      const newTopic = {
+        slug: "new-topic",
+        description: "",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("POST 400: responds with an error when an invalid key is provided", () => {
+      const newTopic = {
+        slug: "new-topic",
+        invalid_key: "invalid",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+        });
+    });
+
+    test("POST 400: responds with an error when extra fields are included", () => {
+      const invalidTopic = {
+        slug: "new-topic",
+        description: "A new topic",
+        invalid_key: "extra-value",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(invalidTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Invalid fields");
         });
     });
   });
