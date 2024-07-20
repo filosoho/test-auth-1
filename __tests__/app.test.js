@@ -148,7 +148,8 @@ describe("/api/articles", () => {
           });
         });
     });
-
+  });
+  describe("GET: Queries", () => {
     test("GET 200: ?sort_by=created_at&order=asc returns articles sorted by created_at in ascending order", () => {
       return request(app)
         .get("/api/articles?sort_by=created_at&order=asc")
@@ -333,79 +334,77 @@ describe("/api/articles", () => {
           );
         });
     });
+  });
+  describe("GET: Pagination", () => {
+    test("GET 200: returns paginated articles with default limit of 10", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          const articlesList = body.articles;
+          expect(articles).toHaveLength(10);
+          expect(articlesList).toHaveProperty(
+            "total_count",
+            expect.any(Number)
+          );
+        });
+    });
 
-    describe("Pagination", () => {
-      test("GET 200: returns paginated articles with default limit of 10", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then(({ body }) => {
-            const {
-              articles: { articles },
-            } = body;
-            const articlesList = body.articles;
-            expect(articles).toHaveLength(10);
-            expect(articlesList).toHaveProperty(
-              "total_count",
-              expect.any(Number)
-            );
-          });
-      });
+    test("GET 200: returns paginated articles with specified limit and page", () => {
+      return request(app)
+        .get("/api/articles?limit=5&page=2")
+        .expect(200)
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          const articlesList = body.articles;
+          expect(articles).toHaveLength(5);
+          expect(articlesList).toHaveProperty(
+            "total_count",
+            expect.any(Number)
+          );
+        });
+    });
 
-      test("GET 200: returns paginated articles with specified limit and page", () => {
-        return request(app)
-          .get("/api/articles?limit=5&page=2")
-          .expect(200)
-          .then(({ body }) => {
-            const {
-              articles: { articles },
-            } = body;
-            const articlesList = body.articles;
-            expect(articles).toHaveLength(5);
-            expect(articlesList).toHaveProperty(
-              "total_count",
-              expect.any(Number)
-            );
-          });
-      });
+    test("GET 200: returns paginated articles with a default limit of 10 and page 1, when limit and page queries passed as empty", () => {
+      return request(app)
+        .get("/api/articles?limit=&page=")
+        .expect(200)
+        .then(({ body }) => {
+          const {
+            articles: { articles },
+          } = body;
+          const articlesList = body.articles;
+          expect(articles).toHaveLength(10);
+          expect(articlesList).toHaveProperty(
+            "total_count",
+            expect.any(Number)
+          );
+        });
+    });
 
-      test("GET 200: returns paginated articles with a default limit of 10 and page 1, when limit and page queries passed as empty", () => {
-        return request(app)
-          .get("/api/articles?limit=&page=")
-          .expect(200)
-          .then(({ body }) => {
-            const {
-              articles: { articles },
-            } = body;
-            const articlesList = body.articles;
-            expect(articles).toHaveLength(10);
-            expect(articlesList).toHaveProperty(
-              "total_count",
-              expect.any(Number)
-            );
-          });
-      });
+    test("GET 400: responds with an error for invalid limit", () => {
+      return request(app)
+        .get("/api/articles?limit=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
 
-      test("GET 400: responds with an error for invalid limit", () => {
-        return request(app)
-          .get("/api/articles?limit=invalid")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("400 - Bad Request: invalid_id");
-          });
-      });
-
-      test("GET 400: responds with an error for invalid page", () => {
-        return request(app)
-          .get("/api/articles?page=invalid")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("400 - Bad Request: invalid_id");
-          });
-      });
+    test("GET 400: responds with an error for invalid page", () => {
+      return request(app)
+        .get("/api/articles?page=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
     });
   });
-
   describe("POST", () => {
     test("POST 201: adds a new article and responds with the newly added article", () => {
       const newArticle = {
@@ -723,6 +722,66 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+  });
+
+  describe("GET: Pagination", () => {
+    test("GET 200: returns paginated comments with limit and page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments, total_count } = body;
+          expect(comments.length).toBe(5);
+          expect(total_count).toBeGreaterThan(5);
+          expect(comments[0]).toHaveProperty("comment_id");
+          expect(comments[0]).toHaveProperty("author");
+          expect(comments[0]).toHaveProperty("body");
+          expect(comments[0]).toHaveProperty("created_at");
+          expect(comments[0]).toHaveProperty("votes");
+        });
+    });
+
+    test("GET 200: returns comments with correct structure and specific values", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=1")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments, total_count } = body;
+          expect(Array.isArray(comments)).toBe(true);
+          expect(typeof total_count).toBe("number");
+
+          const expectedComment = {
+            comment_id: 7,
+            votes: 0,
+            created_at: "2020-05-15T20:19:00.000Z",
+            author: "icellusedkars",
+            body: "Lobster pot",
+            article_id: 1,
+          };
+
+          expect(comments[comments.length - 1]).toEqual(
+            expect.objectContaining(expectedComment)
+          );
+        });
+    });
+
+    test("GET 400: invalid query parameters", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=-1&page=0")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400 - Bad Request: Invalid query parameters");
+        });
+    });
+
+    test("GET 404: no comments found for this article", () => {
+      return request(app)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Article not found");
         });
     });
   });

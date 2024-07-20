@@ -8,10 +8,11 @@ const {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, page } = req.query;
 
-  fetchCommentsByArticleId(article_id)
-    .then((comments) => {
-      res.status(200).send({ comments });
+  fetchCommentsByArticleId(article_id, limit, page)
+    .then(({ comments, total_count }) => {
+      res.status(200).send({ comments, total_count });
     })
     .catch(next);
 };
