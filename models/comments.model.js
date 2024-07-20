@@ -9,7 +9,7 @@ const {
   validateCommentBody,
 } = require("../utils/utils.validation.js");
 
-exports.fetchCommentsByArticleId = (article_id) => {
+exports.fetchCommentsByArticleId = (article_id, limit = 10, page = 1) => {
   return articleExists(article_id).then((exists) => {
     if (!exists) {
       return Promise.reject({
@@ -18,16 +18,37 @@ exports.fetchCommentsByArticleId = (article_id) => {
       });
     }
 
-    const queryStr = `
-          SELECT comment_id, votes, created_at, author, body, article_id
-          FROM comments
-          WHERE article_id = $1
-          ORDER BY created_at DESC;
-        `;
+    if (limit <= 0 || limit === "" || page === "") {
+      return Promise.reject({
+        status: 400,
+        msg: "400 - Bad Request: Invalid query parameters",
+      });
+    }
 
-    return db
-      .query(queryStr, [article_id])
-      .then(({ rows: comments }) => comments);
+    const offset = (page - 1) * limit;
+
+    const fetchCommentsQuery = `
+    SELECT comment_id, votes, created_at, author, body, article_id
+    FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC
+    LIMIT $2 OFFSET $3;
+  `;
+
+    const countCommentsQuery = `
+    SELECT COUNT(*) AS total_count
+    FROM comments
+    WHERE article_id = $1;
+  `;
+
+    return Promise.all([
+      db.query(fetchCommentsQuery, [article_id, limit, offset]),
+      db.query(countCommentsQuery, [article_id]),
+    ]).then(([commentsResult, countResult]) => {
+      const comments = commentsResult.rows;
+      const total_count = parseInt(countResult.rows[0].total_count, 10);
+      return { comments, total_count };
+    });
   });
 };
 
