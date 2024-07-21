@@ -83,16 +83,22 @@ Recommended extension to view JSON files [JSON Viewer Pro](https://chromewebstor
 | Endpoint                                      | Description                                                           |
 | --------------------------------------------- | --------------------------------------------------------------------- |
 | GET /api                                      | Responds with a list of available endpoints                           |
-| GET /api/users                                | Responds with a list of users                                         |
 | GET /api/topics                               | Responds with a list of topics                                        |
+| POST /api/topics                              | Adds a new topic with a unique slug and description                   |
 | GET /api/articles                             | Responds with a list of articles                                      |
 | GET /api/articles (queries)                   | Allows articles to be filtered and sorted                             |
+| POST /api/articles                            | Adds a new article                                                    |
 | GET /api/articles/:article_id (comment count) | Adds a comment count to the response when retrieving a single article |
-| GET /api/articles/:article_id                 | Responds with a single article by article_id                          |
+| GET /api/articles/:article_id                 | Responds with a single article retrived by article_id                 |
+| PATCH /api/articles/:article_id               | Updates an article by article_id                                      |
+| DELETE /api/articles/:article_id              | Deletes an article by article_id                                      |
 | GET /api/articles/:article_id/comments        | Responds with a list of comments by article_id                        |
 | POST /api/articles/:article_id/comments       | Adds a comment by article_id                                          |
-| PATCH /api/articles/:article_id               | Updates an article by article_id                                      |
-| DELETE /api/comments/:comment_id              | Deletes a comment by comment_id topics                                |
+| GET /api/comments/:comment_id                 | Responds with a single comment retirved by comment_id                 |
+| PATCH /api/comments/:comment_id               | Updates a comment by comment_id                                       |
+| DELETE /api/comments/:comment_id              | Deletes a comment by comment_id                                       |
+| GET /api/users                                | Responds with a list of users                                         |
+| GET /api/users/:username                      | Responds with a single object of a user retirved by a username        |
 
 ## Contributing
 
