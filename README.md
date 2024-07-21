@@ -12,7 +12,8 @@ The purpose of this project is to create an API that can be accessed programmati
 
 ## Getting Started
 
-**Prerequisites**  
+### Prerequisites
+
 Ensure you have the following installed on your machine:
 
 ```
@@ -24,7 +25,7 @@ PostgreSQL (https://www.postgresql.org/) (version 12 or higher)
 
 To run the NC-News API server locally or deploy it to a production environment, follow the steps below.
 
-Clone the repository:
+### Clone the repository:
 
 ```
 git clone https://github.com/filosoho/nc-news.git
@@ -34,17 +35,19 @@ git clone https://github.com/filosoho/nc-news.git
 cd your-repo-name
 ```
 
-Install the dependencies:
+### Install the dependencies:
 
 ```
 npm install
 ```
 
-Set up environment variables:
+### Set up environment variables:
 
 As .env.\* files are ignored by Git, you will need to create these files manually to set up the necessary environment variables for connecting to the databases.
 
-Create the following files in the root of the project:
+### Create the following files in the root of the project
+
+Ensure these `.env` files are listed in your `.gitignore` to prevent them from being pushed to GitHub.
 
 ```
 .env.development
@@ -54,9 +57,7 @@ PGDATABASE=database_name
 PGDATABASE=database_name_test
 ```
 
-Ensure these `.env` files are listed in your `.gitignore` to prevent them from being pushed to GitHub.
-
-**Run database setup and seed scripts:**
+### Run database setup and seed scripts:
 
 ```
 npm run setup-dbs
@@ -79,49 +80,19 @@ Recommended extension to view JSON files [JSON Viewer Pro](https://chromewebstor
 
 ## API Endpoints
 
-GET /api
-
-- Responds with a list of available endpoints
-
-GET /api/users
-
-- Responds with a list of users
-
-GET /api/topics
-
-- Responds with a list of topics
-
-GET /api/articles
-
-- Responds with a list of articles
-
-GET /api/articles (queries)
-
-- Allows articles to be filtered and sorted
-
-GET /api/articles/:article_id (comment count)
-
-- Adds a comment count to the response when retrieving a single article
-
-GET /api/articles/:article_id
-
-- Responds with a single article by article_id
-
-GET /api/articles/:article_id/comments
-
-- Responds with a list of comments by article_id
-
-POST /api/articles/:article_id/comments
-
-- Adds a comment by article_id
-
-PATCH /api/articles/:article_id
-
-- Updates an article by article_id
-
-DELETE /api/comments/:comment_id
-
-- Deletes a comment by comment_id
+| Endpoint                                      | Description                                                           |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| GET /api                                      | Responds with a list of available endpoints                           |
+| GET /api/users                                | Responds with a list of users                                         |
+| GET /api/topics                               | Responds with a list of topics                                        |
+| GET /api/articles                             | Responds with a list of articles                                      |
+| GET /api/articles (queries)                   | Allows articles to be filtered and sorted                             |
+| GET /api/articles/:article_id (comment count) | Adds a comment count to the response when retrieving a single article |
+| GET /api/articles/:article_id                 | Responds with a single article by article_id                          |
+| GET /api/articles/:article_id/comments        | Responds with a list of comments by article_id                        |
+| POST /api/articles/:article_id/comments       | Adds a comment by article_id                                          |
+| PATCH /api/articles/:article_id               | Updates an article by article_id                                      |
+| DELETE /api/comments/:comment_id              | Deletes a comment by comment_id topics                                |
 
 ## Contributing
 
