@@ -105,7 +105,9 @@ describe("/api/topics", () => {
         .send(newTopic)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+          expect(body.msg).toBe(
+            "400 - Bad Request: Slug or Description cannot be empty"
+          );
         });
     });
 
@@ -120,7 +122,9 @@ describe("/api/topics", () => {
         .send(newTopic)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+          expect(body.msg).toBe(
+            "400 - Bad Request: Slug or Description cannot be empty"
+          );
         });
     });
 
@@ -135,7 +139,7 @@ describe("/api/topics", () => {
         .send(newTopic)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("400 - Bad Request: Missing required fields");
+          expect(body.msg).toBe("400 - Bad Request: Invalid fields");
         });
     });
 

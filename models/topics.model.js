@@ -10,10 +10,10 @@ exports.fetchTopics = () => {
 exports.addTopic = (topicData) => {
   const { slug, description } = topicData;
 
-  if (!slug || !description) {
+  if (slug === "" || description === "") {
     return Promise.reject({
       status: 400,
-      msg: "400 - Bad Request: Missing required fields",
+      msg: "400 - Bad Request: Slug or Description cannot be empty",
     });
   }
 
