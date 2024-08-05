@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const { getEndpoints } = require("../controllers/api.controller.js");
 const articlesRouter = require("../routes/articles.js");
@@ -10,6 +11,8 @@ const {
   handleSpecificErrors,
   handleGenericErrors,
 } = require("../middleware/errorHandlers.js");
+
+app.use(cors());
 
 app.use(express.json());
 
