@@ -182,7 +182,7 @@ describe("/api/articles", () => {
             expect(article).toHaveProperty("votes");
             expect(article).toHaveProperty("article_img_url");
             expect(article).toHaveProperty("comment_count");
-            expect(article).not.toHaveProperty("body");
+            expect(article).toHaveProperty("body");
           });
           expect(articlesList).toHaveProperty(
             "total_count",

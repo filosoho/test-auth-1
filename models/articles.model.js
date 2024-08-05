@@ -43,7 +43,7 @@ exports.fetchArticles = (sort_by, order, topic, author, limit, page) => {
   const offset = (page - 1) * limit;
 
   let queryStr = `
-    SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+    SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, articles.article_img_url,
     CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
