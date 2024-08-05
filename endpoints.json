@@ -6,31 +6,41 @@
     "description": "serves an array of all topics",
     "details": {
       "queries": [],
-      "exampleResponse": {
-        "topics": [{ "slug": "football", "description": "Footie!" }]
+      "exampleResponses": {
+        "200": {
+          "topics": [{ "slug": "football", "description": "Footie!" }]
+        },
+        "404": {
+          "description": "Returns an error message for invalid endpoint.",
+          "exampleResponse": {
+            "msg": "404 - Not Found: Endpoint does not exist"
+          }
+        }
       }
     }
   },
   "POST /api/topics": {
-    "description": "Creates a new topic with a unique slug and description.",
-    "requestBody": {
-      "slug": "string",
-      "description": "string"
-    },
-    "responses": {
-      "201": {
-        "description": "Returns the newly created topic object.",
-        "exampleResponse": {
-          "topic": {
-            "slug": "new-topic",
-            "description": "A new topic"
-          }
-        }
+    "description": "creates a new topic with a unique slug and description.",
+    "details": {
+      "requestBody": {
+        "slug": "string",
+        "description": "string"
       },
-      "400": {
-        "description": "Returns an error message for invalid or missing fields.",
-        "exampleResponse": {
-          "msg": "400 - Bad Request: Missing required fields"
+      "exampleResponses": {
+        "201": {
+          "description": "Returns the newly created topic object.",
+          "exampleResponse": {
+            "topic": {
+              "slug": "new-topic",
+              "description": "A new topic"
+            }
+          }
+        },
+        "400": {
+          "description": "Returns an error message when slug is empty.",
+          "exampleResponse": {
+            "msg": "400 - Bad Request: Slug or Description cannot be empty"
+          }
         }
       }
     }
@@ -71,25 +81,33 @@
           "description": "Filter articles by the topic 'cooking' and sort by votes in ascending order"
         }
       ],
-      "exampleResponse": {
-        "articles": [
-          {
-            "article_id": 33,
-            "title": "Seafood substitutions are increasing",
-            "topic": "cooking",
-            "author": "weegembump",
-            "body": "Text from the article..",
-            "created_at": "2018-05-30T15:59:13.341Z",
-            "votes": 0,
-            "comment_count": 6
+      "exampleResponses": {
+        "200": {
+          "articles": [
+            {
+              "article_id": 33,
+              "title": "Seafood substitutions are increasing",
+              "topic": "cooking",
+              "author": "weegembump",
+              "body": "Text from the article..",
+              "created_at": "2018-05-30T15:59:13.341Z",
+              "votes": 0,
+              "comment_count": 6
+            }
+          ],
+          "total_count": 12
+        },
+        "404": {
+          "description": "Returns an error message for non-existent topic.",
+          "exampleResponse": {
+            "msg": "404 - Not Found: Topic not found"
           }
-        ],
-        "total_count": 12
+        }
       }
     }
   },
   "POST /api/articles": {
-    "description": "Adds a new article and responds with the newly added article.",
+    "description": "adds a new article and responds with the newly added article.",
     "details": {
       "requestBody": {
         "description": "The article to be added.",
@@ -123,9 +141,9 @@
           }
         }
       },
-      "response": {
-        "description": "Responds with the newly added article.",
-        "example": {
+      "exampleResponses": {
+        "201": {
+          "description": "Responds with the newly added article.",
           "article": {
             "article_id": 14,
             "author": "butter_bridge",
@@ -136,67 +154,76 @@
             "votes": 0,
             "created_at": "2024-07-19T10:11:10.086Z",
             "comment_count": 0
-          }
-        },
-        "properties": {
-          "article": {
-            "type": "object",
-            "properties": {
-              "article_id": {
-                "type": "integer",
-                "description": "The unique identifier for the article."
-              },
-              "author": {
-                "type": "string",
-                "description": "The username of the article's author."
-              },
-              "title": {
-                "type": "string",
-                "description": "The title of the article."
-              },
-              "body": {
-                "type": "string",
-                "description": "The content of the article."
-              },
-              "topic": {
-                "type": "string",
-                "description": "The topic of the article."
-              },
-              "article_img_url": {
-                "type": "string",
-                "description": "URL of the article's image."
-              },
-              "votes": {
-                "type": "integer",
-                "description": "The number of votes for the article. Defaults to 0."
-              },
-              "created_at": {
-                "type": "string",
-                "format": "date-time",
-                "description": "The date and time when the article was created."
-              },
-              "comment_count": {
-                "type": "integer",
-                "description": "The number of comments on the article. Defaults to 0."
+          },
+          "properties": {
+            "article": {
+              "type": "object",
+              "properties": {
+                "article_id": {
+                  "type": "integer",
+                  "description": "The unique identifier for the article."
+                },
+                "author": {
+                  "type": "string",
+                  "description": "The username of the article's author."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "The title of the article."
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The content of the article."
+                },
+                "topic": {
+                  "type": "string",
+                  "description": "The topic of the article."
+                },
+                "article_img_url": {
+                  "type": "string",
+                  "description": "URL of the article's image."
+                },
+                "votes": {
+                  "type": "integer",
+                  "description": "The number of votes for the article. Defaults to 0."
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The date and time when the article was created."
+                },
+                "comment_count": {
+                  "type": "integer",
+                  "description": "The number of comments on the article. Defaults to 0."
+                }
               }
             }
           }
-        }
-      },
-      "errors": [
-        {
-          "status": 400,
-          "description": "Bad Request - The request body is missing required fields or has invalid data."
         },
-        {
-          "status": 404,
-          "description": "Not Found - The topic or author does not exist."
-        },
-        {
-          "status": 500,
-          "description": "Internal Server Error - An unexpected error occurred."
-        }
-      ]
+        "errors": [
+          {
+            "status": 400,
+            "description": "Returns an error message when required fields are missing.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: Missing required fields"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Returns an error message when author does not exist.",
+            "exampleResponse": {
+              "msg": "404 - Not Found: Article or User does not exist"
+            }
+          },
+          {
+            "status": 500,
+            "description": "Returns an error message when unexpected error occurred.",
+            "exampleResponse": {
+              "msg": "Internal Server Error"
+            }
+          }
+        ]
+      }
     }
   },
   "GET /api/articles/:article_id": {
@@ -204,20 +231,38 @@
     "details": {
       "queries": [],
       "exampleResponse": {
-        "article_id": 1,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "author": "butter_bridge",
-        "body": "I find this existence challenging",
-        "created_at": "2020-07-09T20:11:00.000Z",
-        "title": "Living in the shadow of a great man",
-        "topic": "mitch",
-        "votes": 100,
-        "comment_count": 11
+        "200": {
+          "article_id": 1,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "votes": 100,
+          "comment_count": 11
+        },
+        "errors": [
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid article_id.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: invalid_id"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Returns an error message for a non-existent article_id.",
+            "exampleResponse": {
+              "msg": "404 - Not Found: Article not found"
+            }
+          }
+        ]
       }
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "updates the vote count of an article by article_id",
+    "description": "Updates the vote count of an article by article_id",
     "details": {
       "requestBody": {
         "inc_votes": "an integer that indicates how much the votes property should be updated by"
@@ -225,35 +270,74 @@
       "exampleRequest": {
         "inc_votes": 1
       },
-      "exampleResponse": {
-        "article": {
-          "article_id": 1,
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article...",
-          "created_at": "2020-11-03T09:12:00.000Z",
-          "votes": 1
-        }
+      "exampleResponses": {
+        "200": {
+          "article": {
+            "article_id": 1,
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article...",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 1
+          }
+        },
+        "errors": [
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid article_id.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: invalid_id"
+            }
+          },
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid inc_votes.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: inc_votes must be a number"
+            }
+          },
+          {
+            "status": 400,
+            "description": "Returns an error message when inc_votes is missing in request body.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: inc_votes must be a number"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Returns an error message for non-existent article_id.",
+            "exampleResponse": {
+              "msg": "404 - Not Found: Article not found"
+            }
+          }
+        ]
       }
     }
   },
   "DELETE /api/articles/:article_id": {
     "description": "deletes an article by its id",
     "details": {
-      "responses": {
+      "exampleResponses": {
         "204": {
-          "description": "No Content - The article was successfully deleted."
+          "description": "404 - Not Found: Article not found."
         },
-        "404": {
-          "description": "Not Found - The article does not exist.",
-          "exampleResponse": {
-            "msg": "404 - Not Found: Article not found"
+        "errors": [
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid article_id.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: invalid_id"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Returns an error message if the article does not exist.",
+            "exampleResponse": {
+              "msg": "404 - Not Found: Article not found"
+            }
           }
-        },
-        "500": {
-          "description": "Internal Server Error - An unexpected error occurred."
-        }
+        ]
       }
     }
   },
@@ -264,58 +348,64 @@
         "limit": "Limits the number of responses (defaults to 10)",
         "page": "Specifies the page at which to start (calculated using limit)"
       },
-      "successResponses": {
+      "exampleResponses": {
         "200": {
-          "description": "Success",
-          "exampleResponse": {
-            "comments": [
-              {
-                "comment_id": 1,
-                "votes": 16,
-                "created_at": "2020-03-28T00:10:20.000Z",
-                "author": "butter_bridge",
-                "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-                "article_id": 9
-              },
-              {
-                "comment_id": 2,
-                "votes": 14,
-                "created_at": "2020-11-01T12:56:20.000Z",
-                "author": "butter_bridge",
-                "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-                "article_id": 1
-              },
-              {
-                "comment_id": 3,
-                "votes": 100,
-                "created_at": "2020-03-05T16:46:20.000Z",
-                "author": "icellusedkars",
-                "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-                "article_id": 1
-              }
-            ],
-            "total_count": 15
-          }
-        }
-      },
-      "errorResponses": {
-        "404": {
-          "description": "Article not found for the given article_id",
-          "exampleResponse": {
-            "msg": "404 - Not Found: Article not found"
-          }
+          "comments": [
+            {
+              "comment_id": 31,
+              "votes": 11,
+              "created_at": "2020-09-26T00:17:16.000Z",
+              "author": "weegembump",
+              "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              "article_id": 1
+            },
+            {
+              "comment_id": 2,
+              "votes": 14,
+              "created_at": "2020-11-01T12:56:20.000Z",
+              "author": "butter_bridge",
+              "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+              "article_id": 1
+            },
+            {
+              "comment_id": 3,
+              "votes": 100,
+              "created_at": "2020-03-05T16:46:20.000Z",
+              "author": "icellusedkars",
+              "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+              "article_id": 1
+            }
+          ],
+          "total_count": 3
         },
-        "400": {
-          "description": "Invalid query parameters",
-          "exampleResponse": {
-            "msg": "400 - Bad Request: Invalid query parameters"
+        "errors": [
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid article_id.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: invalid_id"
+            }
+          },
+          {
+            "status": 400,
+            "description": "Returns an error message for an invalid query parameters.",
+            "exampleResponse": {
+              "msg": "400 - Bad Request: Invalid query parameters"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Returns an error message if the article does not exist.",
+            "exampleResponse": {
+              "msg": "404 - Not Found: Article not found"
+            }
           }
-        }
+        ]
       }
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "Adds a comment for the specified article ID",
+    "description": "adds a comment for the specified article ID",
     "details": {
       "requestBody": {
         "username": "string",

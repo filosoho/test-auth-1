@@ -436,6 +436,7 @@ describe("/api/articles", () => {
         });
     });
   });
+
   describe("GET: Pagination", () => {
     test("GET 200: returns paginated articles with default limit of 10", () => {
       return request(app)
@@ -707,7 +708,7 @@ describe("/api/articles/:article_id", () => {
         });
     });
 
-    test("PATCH 400: responds with an error for invalid article_id", () => {
+    test("PATCH 400: responds with an error for an invalid article_id", () => {
       return request(app)
         .patch("/api/articles/not-a-number")
         .send({ inc_votes: 1 })
@@ -717,10 +718,20 @@ describe("/api/articles/:article_id", () => {
         });
     });
 
-    test("PATCH 400: responds with an error for invalid inc_votes", () => {
+    test("PATCH 400: responds with an error for an invalid inc_votes", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({ inc_votes: "not-a-number" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("400 - Bad Request: inc_votes must be a number");
+        });
+    });
+
+    test("PATCH 400: responds with an error when inc_votes is missing in request body", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({})
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("400 - Bad Request: inc_votes must be a number");
@@ -736,20 +747,10 @@ describe("/api/articles/:article_id", () => {
           expect(msg).toBe("404 - Not Found: Article not found");
         });
     });
-
-    test("PATCH 400: responds with an error when inc_votes is missing in request body", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({})
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("400 - Bad Request: inc_votes must be a number");
-        });
-    });
   });
 
   describe("DELETE", () => {
-    test("204: deletes an article and its respective comments", () => {
+    test("204: deletes an article bu article_id and its respective comments", () => {
       return request(app)
         .delete("/api/articles/3")
         .expect(204)
@@ -763,21 +764,20 @@ describe("/api/articles/:article_id", () => {
         });
     });
 
-    test("404: responds with an error if the article does not exist", () => {
-      return request(app)
-        .delete("/api/articles/9999")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("404 - Not Found: Article not found");
-        });
-    });
-
     test("400: responds with an error if the article_id is invalid", () => {
       return request(app)
         .delete("/api/articles/invalid-id")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+    test("404: responds with an error if the article does not exist", () => {
+      return request(app)
+        .delete("/api/articles/9999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Article not found");
         });
     });
   });
@@ -801,6 +801,7 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+
     test("GET 200: each comment should have valid property types", () => {
       return request(app)
         .get("/api/articles/1/comments")
@@ -824,6 +825,7 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+
     test("fetchCommentsByArticleId: ensures comments are sorted by created_at in descending order", () => {
       return request(app)
         .get(`/api/articles/1/comments`)
@@ -834,6 +836,7 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
+
     test("GET 200: responds with an empty array if article_id exists but has no comments", () => {
       return request(app)
         .get(`/api/articles/2/comments`)
@@ -843,20 +846,22 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).toEqual([]);
         });
     });
-    test("GET 404: responds with status 404 and Article not found message for an invalid article_id", () => {
-      return request(app)
-        .get(`/api/articles/9999/comments`)
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("404 - Not Found: Article not found");
-        });
-    });
-    test("GET 400: responds with status 400 and Bad Request message for an invalid article_id syntax", () => {
+
+    test("GET 400: responds with an error if the article_id is invalid", () => {
       return request(app)
         .get("/api/articles/invalid_id/comments")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("400 - Bad Request: invalid_id");
+        });
+    });
+
+    test("GET 404: responds with an error if the article does not exist", () => {
+      return request(app)
+        .get(`/api/articles/9999/comments`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404 - Not Found: Article not found");
         });
     });
   });
