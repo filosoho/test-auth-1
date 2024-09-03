@@ -4,7 +4,9 @@ Northcoders News API is a backend service built to provide data programmatically
 
 ## Hosted Version
 
-Access the hosted version of the NC-News API at: [NC-NEWS](https://nc-news-api-backend.onrender.com/)
+Access the hosted version of the NC-News API at: [NC-NEWS](https://nc-news-api-backend.onrender.com/api)
+
+[Go to Documentation](##api-documentation)
 
 ## Background
 
