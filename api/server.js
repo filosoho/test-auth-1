@@ -1,4 +1,5 @@
 const app = require("../db/app.js");
-const serverless = require("serverless-http");
 
-module.exports = serverless(app);
+module.exports = (req, res) => {
+  app(req, res);
+};
