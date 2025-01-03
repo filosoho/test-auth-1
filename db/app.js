@@ -12,7 +12,6 @@ const {
   handleGenericErrors,
 } = require("../middleware/errorHandlers.js");
 
-// app.use(cors());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://fe-nc-news-gui8.onrender.com",
