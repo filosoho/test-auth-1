@@ -12,7 +12,26 @@ const {
   handleGenericErrors,
 } = require("../middleware/errorHandlers.js");
 
-app.use(cors());
+// app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://fe-nc-news-gui8.onrender.com",
+  "https://fanciful-sunshine-c9632c.netlify.app",
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
