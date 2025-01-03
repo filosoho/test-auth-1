@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -12,11 +13,9 @@ const {
   handleGenericErrors,
 } = require("../middleware/errorHandlers.js");
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://fe-nc-news-gui8.onrender.com",
-  "https://fanciful-sunshine-c9632c.netlify.app",
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [];
 
 const corsOptions = {
   origin: function (origin, callback) {
