@@ -13,7 +13,11 @@ const config = {};
 
 if (ENV === "production") {
   config.connectionString = process.env.DATABASE_URL;
+  config.ssl = { rejectUnauthorized: false };
   config.max = 2;
 }
+console.log("Environment:", ENV);
+console.log("Database:", process.env.PGDATABASE);
+console.log("Database URL:", process.env.DATABASE_URL);
 
 module.exports = new Pool(config);
