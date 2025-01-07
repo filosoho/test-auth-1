@@ -27,11 +27,15 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
 
       const usersTablePromise = db.query(`
       CREATE TABLE users (
-        username VARCHAR PRIMARY KEY,
+        id SERIAL PRIMARY KEY,  
+        username VARCHAR UNIQUE NOT NULL, 
         name VARCHAR NOT NULL,
-        avatar_url VARCHAR
+        avatar_url VARCHAR,
+        email VARCHAR UNIQUE,  
+        password VARCHAR, 
+        google_id VARCHAR UNIQUE,  
+        CONSTRAINT email_or_google_id_unique UNIQUE (email, google_id)  
       );`);
-
       return Promise.all([topicsTablePromise, usersTablePromise]);
     })
     .then(() => {
@@ -53,7 +57,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         comment_id SERIAL PRIMARY KEY,
         body VARCHAR NOT NULL,
         article_id INT REFERENCES articles(article_id) NOT NULL,
-        author VARCHAR REFERENCES users(username) NOT NULL,
+         author VARCHAR NOT NULL REFERENCES users(username),
         votes INT DEFAULT 0 NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
       );`);
@@ -66,12 +70,17 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       const topicsPromise = db.query(insertTopicsQueryStr);
 
       const insertUsersQueryStr = format(
-        "INSERT INTO users ( username, name, avatar_url) VALUES %L;",
-        userData.map(({ username, name, avatar_url }) => [
-          username,
-          name,
-          avatar_url,
-        ])
+        "INSERT INTO users (username, name, avatar_url, email, password, google_id) VALUES %L;",
+        userData.map(
+          ({ username, name, avatar_url, email, password, google_id }) => [
+            username,
+            name,
+            avatar_url,
+            email,
+            password,
+            google_id,
+          ]
+        )
       );
       const usersPromise = db.query(insertUsersQueryStr);
 
